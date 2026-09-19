@@ -1,0 +1,96 @@
+.admin-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.admin-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Variants */
+.admin-button-primary {
+  background: var(--aina-primary);
+  color: #fff;
+}
+
+.admin-button-primary:hover:not(:disabled) {
+  background: var(--aina-primaryHover);
+  transform: translateY(-1px);
+}
+
+.admin-button-secondary {
+  background: var(--aina-secondary);
+  color: #fff;
+}
+
+.admin-button-secondary:hover:not(:disabled) {
+  background: var(--aina-secondaryHover);
+  transform: translateY(-1px);
+}
+
+.admin-button-danger {
+  background: #dc3545;
+  color: #fff;
+}
+
+.admin-button-danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.admin-button-ghost {
+  background: transparent;
+  color: var(--aina-textMain);
+  border: 1px solid var(--aina-border);
+}
+
+.admin-button-ghost:hover:not(:disabled) {
+  background: var(--aina-background);
+  border-color: var(--aina-primary);
+}
+
+/* Sizes */
+.admin-button-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.admin-button-md {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+}
+
+.admin-button-lg {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+}
+
+.button-icon {
+  font-size: 1em;
+}
+
+@media (max-width: 768px) {
+  .admin-button-sm {
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.7125rem;
+  }
+
+  .admin-button-md {
+    padding: 0.5625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .admin-button-lg {
+    padding: 0.6875rem 1.125rem;
+    font-size: 0.9375rem;
+  }
+}

@@ -1,0 +1,21 @@
+.places-category-note {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--aina-textSecondary);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+.places-category-note svg {
+  color: var(--aina-primary);
+}
+
+.places-page .food-detail {
+  align-items: flex-start;
+}
+
+.places-page .food-detail svg {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+}

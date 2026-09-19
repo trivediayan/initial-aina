@@ -53,14 +53,14 @@ export default function Home() {
       })
 
       if (!response.ok) {
-        throw new Error('Aina is temporarily unavailable. Please try again.')
+        throw new Error('AINA is temporarily unavailable. Please try again.')
       }
 
       const data: ChatResponse = await response.json()
       setConversationId(data.conversation_id)
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Aina is temporarily unavailable. Please try again.')
+      setError(err instanceof Error ? err.message : 'AINA is temporarily unavailable. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -77,7 +77,7 @@ export default function Home() {
     <div className="min-h-screen bg-stone-50">
       <header className="bg-white border-b border-stone-200 px-6 py-4">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-semibold text-stone-800">Aina</h1>
+          <h1 className="text-2xl font-semibold text-stone-800">AINA</h1>
           <p className="text-sm text-stone-600 mt-1">Vadodara Heritage Guide</p>
         </div>
       </header>
@@ -87,7 +87,7 @@ export default function Home() {
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.length === 0 && (
               <div className="text-center text-stone-500 py-12">
-                <p className="text-lg">Ask Aina about Vadodara...</p>
+                <p className="text-lg">Ask AINA about Vadodara...</p>
                 <p className="text-sm mt-2">I can help you discover heritage places and plan your visit.</p>
               </div>
             )}
@@ -118,7 +118,7 @@ export default function Home() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-stone-100 text-stone-600 rounded-lg px-4 py-3">
-                  <p>Aina is thinking...</p>
+                  <p>AINA is thinking...</p>
                 </div>
               </div>
             )}
@@ -140,7 +140,7 @@ export default function Home() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask Aina about Vadodara..."
+                placeholder="Ask AINA about Vadodara..."
                 disabled={isLoading}
                 className="flex-1 min-h-[44px] max-h-[120px] px-4 py-3 border border-stone-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:bg-stone-100 disabled:text-stone-500"
                 rows={1}

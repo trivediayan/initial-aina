@@ -1,0 +1,47 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--aina-background);
+}
+
+.admin-main-content {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+.admin-main-content.expanded {
+  margin-left: 70px;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.admin-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 98;
+}
+
+@media (max-width: 1024px) {
+  .admin-main-content {
+    margin-left: 0;
+  }
+
+  .admin-main-content.expanded {
+    margin-left: 0;
+  }
+
+  .admin-content {
+    padding: 1rem;
+  }
+}

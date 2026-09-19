@@ -1,0 +1,595 @@
+[
+  {
+    "id": "dakshinamurti_eme_temple",
+    "name": "Dakshinamoorthy and Navgraha EME Temple",
+    "aliases": [
+      "EME Temple",
+      "Dakshinamurti Temple"
+    ],
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "category": "religious heritage",
+    "subcategory": "Hindu temple; military-era modern temple",
+    "location": {
+      "address": "Inside EME School campus, EME Road, Fatehgunj, Vadodara, Gujarat 390002",
+      "area": "Fatehgunj",
+      "latitude": 22.3314,
+      "longitude": 73.192
+    },
+    "historical_period": "Mid-20th century, post-Independence India",
+    "built_year": "1965–1966; completed and consecrated in February 1966",
+    "established_year": "",
+    "associated_people": [
+      "Brigadier A.F. Eugene, first Commandant of EME School"
+    ],
+    "historical_context": "Constructed by the Electronics & Mechanical Engineers (EME) School of the Indian Army and maintained and run by the Army since inception. It was designed and built under the leadership of Brigadier A.F. Eugene, who was a Christian. The source describes this background as central to the temple's narrative as a symbol of secularism and inter-faith harmony within the armed forces. Tourism and heritage write-ups often describe it as one of the first or the first army-built temples in the world, but the source material presents this as a commonly used description rather than a definitively established fact.",
+    "architecture": {
+      "style": "Modern dome-shaped design inspired by Buckminster Fuller",
+      "materials": [
+        "Aluminium framework",
+        "Aluminium sheets"
+      ],
+      "notable_features": [
+        "Dome-shaped structure",
+        "Kalasha representing Hinduism",
+        "Dome representing Islamic mosque style",
+        "Tower/spire associated in the design with Christianity",
+        "Golden structure above the tower associated with Buddhism",
+        "Entrance design associated with Jainism",
+        "Havan kund associated with Zoroastrianism",
+        "Main Dakshinamurti idol faces south",
+        "Ganesha and Kartikeya idols, said to have been brought from Mahabalipuram",
+        "Silver arch behind the Shiva idol engraved with 'Om Namah Shivaya'",
+        "Replica of the Amarnath Shivalinga",
+        "Over 100 ancient stone statues from approximately the 6th–16th centuries CE in the gardens",
+        "Navgraha temple added in 2023 as a scale replica of the main structure, with nine planetary idols and a Shani Shila"
+      ]
+    },
+    "cultural_significance": "Functions as a living place of worship for soldiers, staff and local devotees, while also serving as a tourist and educational site for architecture and heritage enthusiasts. It is locally celebrated as a symbol of unity in diversity and religious harmony. Maha Shivratri and Janmashtami attract large crowds. The ancient sculptures connect the modern military institution with broader Indian art-historical traditions.",
+    "religious_significance": "A Hindu temple dedicated to Lord Shiva in the Dakshinamurti form, understood as Shiva as supreme teacher. The idol represents Shiva as a teacher who gives knowledge and wisdom. The complex also contains a Navgraha shrine added in 2023.",
+    "historical_events": [
+      "Construction during 1965–1966",
+      "Consecration in February 1966",
+      "Navgraha temple added in 2023",
+      "Maha Shivratri and Janmashtami celebrations draw large crowds"
+    ],
+    "interesting_facts": [
+      "It is a Hindu temple built and managed by the Indian Army inside a military school campus.",
+      "Its design incorporates symbols associated with multiple religions.",
+      "It combines a modern 1960s structure with ancient sculptures in its gardens.",
+      "Its aluminium dome is unusual compared with traditional Hindu temple designs in Gujarat."
+    ],
+    "lesser_known_facts": [
+      "The temple is less famous than Laxmi Vilas Palace and is therefore overlooked by many tourists.",
+      "Its location inside an army cantonment can lead visitors to assume that entry is difficult or prohibited.",
+      "The gardens contain ancient stone statues dating approximately from the 6th to 16th centuries CE."
+    ],
+    "stories_and_legends": [],
+    "current_condition": "The temple is described as well-maintained and clean, with green gardens. Daily prayers and worship continue. The old statues are kept in open garden areas. The 2023 Navgraha addition indicates continued use, care and development by the Army and EME School.",
+    "visitor_information": {
+      "timings": "Commonly reported as 6:00/6:30 AM to 8:30/9:00 PM daily; special Tuesday aarti around 6:45 PM.",
+      "entry_fee": "Free; no ticket required.",
+      "accessibility": "Inside EME School campus. About 5 km from Vadodara Junction railway station; reachable by auto, taxi or city bus to Fatehgunj/EME Road. Nearest airport is Vadodara International Airport.",
+      "restrictions": "Visitors may need to show valid photo ID at the Army-campus gate. Foreign nationals may need special permission or may not be allowed. Modest clothing is recommended and footwear should be removed before entering sanctum areas."
+    },
+    "nearby_places": [],
+    "tourism_value": "Useful for visitors interested in modern heritage, military history, architecture, religious symbolism, inter-faith harmony and ancient sculpture collections.",
+    "hidden_gem": true,
+    "sources": [
+      {
+        "title": "Wikipedia – EME Temple",
+        "url": "",
+        "type": "secondary"
+      },
+      {
+        "title": "Trawell.in – EME Temple, Vadodara – Timings, Festivals, History, Darshan, Pooja Timings",
+        "url": "",
+        "type": "secondary"
+      },
+      {
+        "title": "History of Vadodara – EME Temple (Dakshinamurti Temple)",
+        "url": "",
+        "type": "local history"
+      },
+      {
+        "title": "Mappls / latitude.to / PilgrimData",
+        "url": "",
+        "type": "additional corroboration"
+      }
+    ],
+    "data_quality_notes": [
+      "The source uses both 'one of the first' and 'the first' army-built temple descriptions; this claim should not be treated as an independently verified absolute fact.",
+      "Visitor timings are given as ranges with alternative reported opening and closing times.",
+      "Airport distance is described relative to Vadodara Junction rather than as a precise temple-to-airport distance."
+    ]
+  },
+  {
+    "id": "sevasi_vav",
+    "name": "Sevasi Vav",
+    "aliases": [
+      "Sevasi Vaav",
+      "Vidhyadhar Vav",
+      "Vidhyadhar ni Vav",
+      "Aakota Stepwell"
+    ],
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "category": "water heritage",
+    "subcategory": "historic stepwell (vav)",
+    "location": {
+      "address": "Sevasi Vav (Vidhyadhar Vav), near main Sevasi bus stop, Sevasi–Sindhrot road, Vadodara, Gujarat 391101",
+      "area": "Sevasi",
+      "latitude": 22.3182,
+      "longitude": 73.1188
+    },
+    "historical_period": "Late 15th–mid-16th century; Sultanate-period Vadodara region",
+    "built_year": "Generally dated to the late 15th–mid-16th century; many sources place it around c. 1496–1543 CE",
+    "established_year": "",
+    "associated_people": [
+      "Vidyadhar, a respected local spiritual leader"
+    ],
+    "historical_context": "The stepwell is described as having been built in memory of Vidyadhar, who died young. It is believed that the state treasury provided the money for its construction. It formed part of a network of more than 100 stepwells around Vadodara that stored rainwater and provided drinking water. The source places its construction during the time of Sultan Mahmud Begada / Muzaffarid Gujarat Sultanate.",
+    "architecture": {
+      "style": "Historic Gujarat Sultanate-period stepwell architecture",
+      "materials": [
+        "Brick",
+        "Stone"
+      ],
+      "notable_features": [
+        "East-to-west orientation with entrance on the west",
+        "Seven underground levels",
+        "Long stepped stairway descending toward the well",
+        "Large arches along the stairway",
+        "Five pavilion towers",
+        "Five supporting structures",
+        "Entrance carvings of two tigers on the left and two elephants on the right",
+        "Carvings of flowers, bells, animals and toran patterns",
+        "Figures including horses with riders and geese",
+        "Old writings and inscriptions relating to festivals and community life",
+        "Domed structure at one end providing a balcony/viewing platform",
+        "Well shaft extending to the water table"
+      ]
+    },
+    "cultural_significance": "The stepwell was historically an important water source and community meeting place, especially for women. It remains associated with small religious activities, with prayer flags, coconuts, diyas and small shrines visible inside.",
+    "religious_significance": "Small religious activities continue at the site. Prayer flags, coconuts, diyas and small shrines are present.",
+    "historical_events": [],
+    "interesting_facts": [
+      "It is a seven-level underground stepwell.",
+      "Its entrance has distinctive tiger and elephant carvings.",
+      "It combines a roughly 500-year-old water structure with surviving decorative carvings and a domed viewing structure.",
+      "It was historically part of a larger network of more than 100 stepwells around Vadodara."
+    ],
+    "lesser_known_facts": [
+      "It is hidden behind shops and lacks clear signboards.",
+      "It is less famous than Rani ki Vav, Adalaj Stepwell and Laxmi Vilas Palace.",
+      "Artists and media have highlighted it through awareness efforts such as 'Soul of the Vav'."
+    ],
+    "stories_and_legends": [
+      {
+        "type": "legend",
+        "text": "A local folk story claims that young girls wearing gold were sacrificed at the stepwell on full-moon nights for prosperity. The source explicitly states that this is only a folk story and is not proven history."
+      }
+    ],
+    "current_condition": "The stepwell is mostly still standing but is described as poorly maintained. Some bricks are exposed and plants have grown on the steps. Lower levels have stagnant, foul-smelling water. Some paintings and carvings are damaged by moisture, chemicals and vandalism. The dome and upper levels are in better condition. Littering and misuse are identified as heritage threats. As of 2024–2025, the source says it had not received major government restoration work comparable to Rani ki Vav.",
+    "visitor_information": {
+      "timings": "No official ticket counter or fixed hours; described as effectively open 24 hours, with daylight visits strongly recommended.",
+      "entry_fee": "Free; no ticket.",
+      "accessibility": "Near the main Sevasi bus stop on the Sevasi–Sindhrot road. Accessible by auto/taxi; city buses toward Sevasi/Sindhrot can be used, followed by a short walk.",
+      "restrictions": "Lower levels may be dark, damp and unsafe. Visitors are advised to watch their step, avoid climbing on fragile carvings, not litter or throw anything into the well, and respect local religious activity. Modest clothing is advisable."
+    },
+    "nearby_places": [],
+    "tourism_value": "Strong interest for visitors focused on historic water systems, stepwell architecture, sculpture, photography, local community history and lesser-known heritage.",
+    "hidden_gem": true,
+    "sources": [
+      {
+        "title": "History of Vadodara – Vav (Stepwells)",
+        "url": "",
+        "type": "local history"
+      },
+      {
+        "title": "Sevasi Vav – A 500 year old stepwell of Vadodara, Gujarat – explorewithecokats.com",
+        "url": "",
+        "type": "first-hand visit report"
+      },
+      {
+        "title": "The Indian Express – Shining a spotlight on forgotten heritage of stepwells in Gujarat",
+        "url": "",
+        "type": "news"
+      }
+    ],
+    "data_quality_notes": [
+      "The source gives an approximate construction period and a range of c. 1496–1543 CE rather than one verified construction date.",
+      "The Aakota Stepwell label appears in the section heading, while the place is otherwise consistently described as Sevasi Vav/Vidhyadhar Vav. The source does not explicitly explain the naming relationship.",
+      "Some visitor information is based on secondary sources and should not be treated as official site policy."
+    ]
+  },
+  {
+    "id": "khanderao_market",
+    "name": "Khanderao Market",
+    "aliases": [
+      "Khande Rao Market"
+    ],
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "category": "civic heritage",
+    "subcategory": "historic market and municipal building",
+    "location": {
+      "address": "Khanderao Market, Chamaraja Road / Palace Road, near old city and Laxmi Vilas Palace, Vadodara, Gujarat 390001",
+      "area": "Old city / Palace Road",
+      "latitude": 22.2966,
+      "longitude": 73.2015
+    },
+    "historical_period": "Early 20th century; late colonial / princely-state era",
+    "built_year": "1906–1907",
+    "established_year": "",
+    "associated_people": [
+      "Maharaja Sayajirao Gaekwad III",
+      "Maharaja Khanderao Gaekwad II",
+      "Robert Chisholm",
+      "Vinayak Pandurang Karmarkar (V.R. Karmarkar)"
+    ],
+    "historical_context": "Commissioned by Maharaja Sayajirao Gaekwad III to mark the silver jubilee of his administration and gifted to the city municipality as a civic and commercial asset. The market was originally a major wholesale and retail market for vegetables, fruits and flowers, with 483 shops and about 300 platforms (otlas). It was one of the last major buildings designed by British architect Robert Chisholm in India.",
+    "architecture": {
+      "style": "Indo-Saracenic",
+      "materials": [
+        "Bricks",
+        "Mortar",
+        "Dhrangadhra stone",
+        "Indian patent stone"
+      ],
+      "notable_features": [
+        "Two-storey U-shaped plan",
+        "Large open courtyard with a central fountain",
+        "Two long bays, each about 70 ft × 34 ft",
+        "Overhead passage connecting the bays",
+        "Central dome approximately 86 ft high",
+        "Entrance inspired by Dabhoi Fort gate and Lehripura Gate",
+        "Hindu-style spires (shikharas)",
+        "Decorative brackets",
+        "Projecting windows (jharokhas)",
+        "Domes influenced by Hindu temple designs",
+        "Arches showing Islamic architectural influence",
+        "Stone jali screens similar to Mughal examples",
+        "Clock tower",
+        "Marble statue of Maharaja Khanderao Gaekwad II in the courtyard"
+      ]
+    },
+    "cultural_significance": "The building remains a working market and houses Vadodara Municipal Corporation offices, combining historical architecture with everyday civic and commercial life. Its courtyard and shops reflect traditional bazaar culture, including shopping, bargaining, festivals and social interaction. It forms part of Vadodara's Indo-Saracenic architectural identity.",
+    "religious_significance": "",
+    "historical_events": [
+      "Construction in 1906–1907",
+      "Built to mark Sayajirao Gaekwad III's 25-year silver jubilee",
+      "Marble statue of Maharaja Khanderao Gaekwad II inaugurated by Sayajirao on 23 December 1935"
+    ],
+    "interesting_facts": [
+      "It looks like a grand palace but functions as a market and government building.",
+      "The building was designed by Robert Chisholm.",
+      "It originally had 483 shops and about 300 platforms (otlas).",
+      "The main entrance draws inspiration from historic Vadodara and Dabhoi gates."
+    ],
+    "lesser_known_facts": [
+      "It is often overshadowed by Laxmi Vilas Palace and other major Vadodara attractions.",
+      "Visitors often encounter it primarily as a busy market rather than as a heritage building.",
+      "The building was gifted to the municipality as a civic and commercial asset."
+    ],
+    "stories_and_legends": [],
+    "current_condition": "The building is mostly intact and in fairly good condition and remains in active use as a market and VMC office. The stone has darkened over time, some areas have plant growth, and normal wear is visible from heavy daily use. The surrounding area can be busy, noisy and crowded. Some surrounding parts have been modified or occupied, while the main historic structure remains clearly visible and in use.",
+    "visitor_information": {
+      "timings": "Market area generally operates around 7:00 AM–8:30 PM, with individual stalls varying. VMC offices typically operate 10:00 AM–5:00 PM, Monday–Saturday, closed Sundays and public holidays.",
+      "entry_fee": "Free to enter the market area and courtyard; no ticket.",
+      "accessibility": "Well-known landmark on Palace Road. Reachable by auto/taxi; nearby city buses serve Laxmi Vilas Palace, Mandvi and old-city stops.",
+      "restrictions": "Parking is limited and often paid. Visitors should be mindful of crowds, vendors and moving carts and keep valuables secure."
+    },
+    "nearby_places": [
+      {
+        "place_name": "Nyaya Mandir",
+        "relationship": "nearby"
+      },
+      {
+        "place_name": "Raopura Clock Tower",
+        "relationship": "nearby"
+      },
+      {
+        "place_name": "Laxmi Vilas Palace",
+        "relationship": "nearby"
+      }
+    ],
+    "tourism_value": "Useful for visitors interested in Indo-Saracenic architecture, princely-state urban planning, civic history and living bazaar culture.",
+    "hidden_gem": true,
+    "sources": [
+      {
+        "title": "Wikipedia – Khanderao Market",
+        "url": "",
+        "type": "secondary"
+      },
+      {
+        "title": "History of Vadodara – Khanderao Market",
+        "url": "",
+        "type": "local history"
+      },
+      {
+        "title": "Taylor & Francis – Architectural analyses of 19th century Indo-Saracenic structures designed by British Architect Robert Chisholm in Vadodara",
+        "url": "",
+        "type": "scholarly"
+      },
+      {
+        "title": "District tourism pages / Baroda.com / travel guides",
+        "url": "",
+        "type": "additional corroboration"
+      }
+    ],
+    "data_quality_notes": [
+      "The source describes the market as one of the last major buildings designed by Robert Chisholm in India and also states that the design was prepared before he left India; this is preserved without adding further interpretation.",
+      "Some visitor information is attributed in the source to travel-guide material rather than an official heritage-site schedule."
+    ]
+  },
+  {
+    "id": "qutubuddin_hajira",
+    "name": "Qutubuddin Hajira",
+    "aliases": [
+      "Hazira Maqbara",
+      "Tomb of Qutubuddin Muhammad Khan",
+      "Qutbuddin Mahmad Khan's Tomb"
+    ],
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "category": "funerary heritage",
+    "subcategory": "Mughal-era mausoleum",
+    "location": {
+      "address": "Vadodara, Gujarat, India; approximately 4.5 km from Vadodara Junction via Pratapnagar Road",
+      "area": "",
+      "latitude": 22.2779,
+      "longitude": 73.207
+    },
+    "historical_period": "Mughal period, late 16th century",
+    "built_year": "c. 1586 CE",
+    "established_year": "",
+    "associated_people": [
+      "Qutubuddin Muhammad Khan",
+      "Naurang Khan",
+      "Emperor Akbar",
+      "Prince Salim, later Emperor Jahangir"
+    ],
+    "historical_context": "The mausoleum commemorates Qutubuddin Muhammad Khan and contains the tombstone of his son Naurang Khan. Qutubuddin Muhammad Khan was associated with Emperor Akbar and served as tutor to Prince Salim, later Emperor Jahangir. The monument is presented as evidence of Mughal presence and administration in Gujarat during the late 16th century. Gujarat Tourism states that, according to the Archaeological Survey of India, the mausoleum was built around 1586 CE.",
+    "architecture": {
+      "style": "Mughal-era funerary architecture",
+      "materials": [],
+      "notable_features": [
+        "High octagonal platform",
+        "Five arches on each side of the octagonal structure",
+        "Double dome, according to secondary heritage documentation",
+        "Arabic/Quranic inscriptions, according to secondary heritage documentation",
+        "Jali work, according to secondary heritage documentation"
+      ]
+    },
+    "cultural_significance": "Represents the Mughal historical and architectural heritage of Vadodara and preserves a connection with the political and administrative history of Mughal Gujarat. It demonstrates the presence of Mughal funerary architecture in western India.",
+    "religious_significance": "A mausoleum/funerary monument associated with Qutubuddin Muhammad Khan and his son Naurang Khan.",
+    "historical_events": [
+      "Construction around 1586 CE"
+    ],
+    "interesting_facts": [
+      "The octagonal plan has five arches on each side.",
+      "Gujarat Tourism describes it as a lesser-visited mausoleum.",
+      "The monument is included by Gujarat Tourism among Gujarat's heritage sites."
+    ],
+    "lesser_known_facts": [
+      "The coordinates in the source are explicitly described as secondary geographic documentation and not confirmed as official ASI coordinates.",
+      "The monument is overshadowed by better-known Vadodara attractions such as Laxmi Vilas Palace."
+    ],
+    "stories_and_legends": [],
+    "current_condition": "The historic mausoleum survives as a heritage monument and is included by Gujarat Tourism among Gujarat's heritage sites. The source explicitly says that recent structural restoration or structural-stability claims should not be included without a current ASI conservation/condition report.",
+    "visitor_information": {
+      "timings": "Dawn–dusk, according to Gujarat Tourism.",
+      "entry_fee": "Not specified by the official Gujarat Tourism page; verify locally.",
+      "accessibility": "Vadodara is connected by road, railway and air. The monument is approximately 4.5 km from Vadodara Junction and can be reached by auto-rickshaw or taxi via Pratapnagar Road. Approximately 8 km from Vadodara International Airport.",
+      "restrictions": "Current visitor access and site rules should be verified before visiting. Foreign visitors should verify any special access requirements. Any specific footwear or photography rules should be confirmed at the site."
+    },
+    "nearby_places": [],
+    "tourism_value": "A strong hidden-heritage option for visitors interested in Mughal history, funerary architecture and lesser-visited monuments in Vadodara.",
+    "hidden_gem": true,
+    "sources": [
+      {
+        "title": "Archaeological Survey of India (ASI) Vadodara Circle – Official Monument Registry for Hazira or Qutbuddin Mahmad Khan's Tomb (N-GJ-192)",
+        "url": "",
+        "type": "official"
+      },
+      {
+        "title": "Wikipedia – Hazira Maqbara",
+        "url": "",
+        "type": "secondary"
+      },
+      {
+        "title": "Gujarat Tourism Official Portal – Heritage Directory entry for Hazira Maqbara, Vadodara",
+        "url": "",
+        "type": "official"
+      }
+    ],
+    "data_quality_notes": [
+      "Coordinates are explicitly not to be labelled official ASI coordinates unless directly confirmed by an ASI source.",
+      "Entry fee is not specified by the official Gujarat Tourism page.",
+      "Current restoration, structural stability and special access rules are not established by the source material and require current verification."
+    ]
+  },
+  {
+    "id": "makarpura_palace",
+    "name": "Makarpura Palace",
+    "aliases": [],
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "category": "royal heritage",
+    "subcategory": "palace; former summer residence and hunting lodge",
+    "location": {
+      "address": "Himmat Nagar, Makarpura Road, Vadodara, Gujarat 390010",
+      "area": "Makarpura Road / Himmat Nagar",
+      "latitude": 22.2412,
+      "longitude": 73.1949
+    },
+    "historical_period": "19th-century British Colonial / Princely State era",
+    "built_year": "Originally built in 1870; extended and renovated between 1883 and 1890",
+    "established_year": "",
+    "associated_people": [
+      "Maharaja Khanderao Gaekwad",
+      "Maharaja Sayajirao Gaekwad III",
+      "Robert Fellowes Chisholm",
+      "William Goldring"
+    ],
+    "historical_context": "Built as a royal summer residence and hunting lodge for the Gaekwad dynasty. Maharaja Khanderao Gaekwad commissioned the original structure in 1870 because of its proximity to deer-rich hunting grounds (Shikarkhana) in Dhaniavi. Maharaja Sayajirao Gaekwad III later extended and renovated it under the guidance of British architect Robert Fellowes Chisholm. It later served as a filming location for early Indian silent cinema, including Prithvi Vallabh (1924). After Independence it was repurposed and is currently described as an active military defense facility, No. 17 Tetra School training facility for the Indian Air Force.",
+    "architecture": {
+      "style": "Classical Italian Renaissance architectural style",
+      "materials": [],
+      "notable_features": [
+        "Three-storey double-wing layout",
+        "Original 1870 structure on the right",
+        "Matching 1880s extension on the left",
+        "Ground and upper-floor corridors connecting the wings",
+        "Rows of classical arches decreasing in size on higher floors",
+        "Single-storey porte-cochère",
+        "Multifoil Italian fountains at the entrance",
+        "Over 100 rooms",
+        "Frame-arch balconies",
+        "Wooden staircases",
+        "Painted ceilings",
+        "Stucco panels",
+        "Originally a 130-acre Japanese-style garden designed by William Goldring",
+        "Pavilions, fountains and an artificial lake in the original garden"
+      ]
+    },
+    "cultural_significance": "Represents a major example of Italian Renaissance revivalist design commissioned by a 19th-century Indian princely state. It highlights the architectural contribution of Robert Fellowes Chisholm to Baroda's royal landscape.",
+    "religious_significance": "",
+    "historical_events": [
+      "Original palace commissioned and built in 1870",
+      "Extension and renovation between 1883 and 1890",
+      "Used as a filming location for Prithvi Vallabh (1924)",
+      "Repurposed after Independence as a military facility"
+    ],
+    "interesting_facts": [
+      "Its design is described as almost purely European Italian Renaissance style, unlike many Gaekwad structures associated with Indo-Saracenic design.",
+      "The two grand structural wings were built decades apart under two different Maharajas.",
+      "The original grounds included a 130-acre Japanese-style garden."
+    ],
+    "lesser_known_facts": [
+      "The palace is largely inaccessible to the general public because it functions as an operational defense campus.",
+      "The original garden was designed by William Goldring, associated in the source with the Royal Botanic Gardens."
+    ],
+    "stories_and_legends": [],
+    "current_condition": "Maintained under Indian Air Force custodianship. The outer structure, main facades and surrounding grounds remain intact, while internal spaces reflect modifications for administrative use.",
+    "visitor_information": {
+      "timings": "Restricted military area; viewable only from outside the main perimeter gates.",
+      "entry_fee": "N/A; closed to the general public.",
+      "accessibility": "Exterior roadside viewing from Makarpura Road. Approximately 9 km south of Vadodara Junction and approximately 13 km from Vadodara International Airport. Accessible by local buses, auto-rickshaws or taxis.",
+      "restrictions": "Strict military security rules apply. Unauthorized entry, drone flying and photography of security gates are prohibited. Foreign visitors are subject to military security access restrictions."
+    },
+    "nearby_places": [],
+    "tourism_value": "Primarily valuable as an architectural and historical exterior-viewing landmark for visitors interested in Gaekwad-era royal architecture, European revival styles and the later military reuse of heritage buildings.",
+    "hidden_gem": true,
+    "sources": [
+      {
+        "title": "Wikipedia – Makarpura Palace",
+        "url": "",
+        "type": "secondary"
+      },
+      {
+        "title": "History of Vadodara – Makarpura Palace",
+        "url": "",
+        "type": "local history"
+      },
+      {
+        "title": "Incredible India – Landmark overview of Makarpura Palace",
+        "url": "",
+        "type": "official tourism"
+      }
+    ],
+    "data_quality_notes": [
+      "The source does not provide a current public-access route beyond exterior viewing and explicitly describes the site as a restricted military area.",
+      "The palace's current use is described as an Indian Air Force training facility in the source material; no further current operational details are added."
+    ]
+  },
+  {
+    "id": "por_baliyadev_mandir",
+    "name": "Mota Baliyadev Temple, Por",
+    "aliases": [
+      "Por Baliyadev Mandir",
+      "Mota Baliyadev Temple"
+    ],
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "category": "religious heritage",
+    "subcategory": "folk-deity temple; living pilgrimage site",
+    "location": {
+      "address": "Por village, Vadodara district, Gujarat",
+      "area": "Por",
+      "latitude": 22.1812,
+      "longitude": 73.1975
+    },
+    "historical_period": "Medieval / living folk-religious heritage",
+    "built_year": "The Vadodara District Government describes it as an old religious site; local/secondary sources commonly describe it as more than 500 years old.",
+    "established_year": "",
+    "associated_people": [],
+    "historical_context": "The temple is a long-standing religious site at Por and is included in Vadodara District Government tourism information. Local religious tradition connects Baliyadev with Barbarik of the Mahabharata. The source explicitly instructs that this connection should be treated as religious tradition/legend rather than independently established archaeological fact.",
+    "architecture": {
+      "style": "",
+      "materials": [],
+      "notable_features": [
+        "Open-sky sanctum",
+        "Absence of a conventional shikhara, according to local/traditional accounts",
+        "Modern visitor and community facilities",
+        "Modern improvements made to the temple complex over time"
+      ]
+    },
+    "cultural_significance": "Functions as a living religious and pilgrimage centre for devotees of Baliyadev. Local devotional traditions and religious festivals are important to its cultural significance. It represents the continuing role of folk-deity worship within Gujarat's living cultural heritage.",
+    "religious_significance": "Dedicated to Baliyadev, a locally revered folk deity. Local tradition connects Baliyadev with Barbarik of the Mahabharata. This connection is explicitly treated as tradition/legend in the source.",
+    "historical_events": [],
+    "interesting_facts": [
+      "The temple's open-sky sanctum and absence of a conventional shikhara give it a distinctive character.",
+      "Worship focuses on a local folk deity rather than a mainstream temple-tourism tradition."
+    ],
+    "lesser_known_facts": [
+      "It lies outside Vadodara's main urban tourist circuit.",
+      "It is primarily experienced as a local pilgrimage site rather than as a conventional architectural tourist attraction."
+    ],
+    "stories_and_legends": [
+      {
+        "type": "religious_tradition",
+        "text": "Local religious tradition connects Baliyadev with Barbarik of the Mahabharata. The source says this should be presented as religious tradition/legend, not as independently established archaeological fact."
+      }
+    ],
+    "current_condition": "The temple is an active place of worship and continues to receive devotees. Specific claims about renovation budgets, structural condition or administrative management are not included because the source says they require a current official source.",
+    "visitor_information": {
+      "timings": "Verify current temple timings locally.",
+      "entry_fee": "Not specified by the official district source; verify locally.",
+      "accessibility": "Located in Por village, Vadodara district; accessible by road from Vadodara. Current public transport and road routes should be checked before travelling.",
+      "restrictions": "Standard temple etiquette applies. Photography rules should be confirmed at the temple. Foreign visitors should verify current access rules. Modest/traditional clothing is recommended, footwear should be removed according to current temple instructions, and visitors should maintain silence/respect in worship areas."
+    },
+    "nearby_places": [],
+    "tourism_value": "Useful for visitors interested in living religious heritage, Gujarat folk-deity traditions, pilgrimage culture and lesser-known places outside the main Vadodara tourist circuit.",
+    "hidden_gem": true,
+    "sources": [
+      {
+        "title": "Vadodara District Government Official Portal – Por Baliyadev Mandir",
+        "url": "",
+        "type": "official"
+      },
+      {
+        "title": "Government of Gujarat / local cultural documentation",
+        "url": "",
+        "type": "official/local documentation"
+      },
+      {
+        "title": "Additional local heritage or temple documentation",
+        "url": "",
+        "type": "local documentation"
+      }
+    ],
+    "data_quality_notes": [
+      "No exact construction year is provided. The source says the district government describes it as an old religious site, while local/secondary sources commonly describe it as more than 500 years old.",
+      "The Barbarik connection is explicitly a religious tradition/legend, not an established archaeological fact.",
+      "Current timings, entry fee, photography rules and foreign-visitor access require local verification."
+    ]
+  }
+]

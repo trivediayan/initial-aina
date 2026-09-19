@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,600&family=Outfit:wght@400;500;600;650&display=swap');
+
+/* ============================================
+   AAYNA DESIGN TOKENS
+   ============================================ */
+:root {
+  /* Core Colors */
+  --color-bg:           #F8F5F0;
+  --color-surface:      #FFFFFF;
+  --color-surface-2:    #F3EDE6;
+  --color-surface-3:    #EDE4DA;
+
+  /* Brand */
+  --color-primary:      #A0522D;
+  --color-primary-hover:#8B4513;
+  --color-primary-soft: #FAF0E8;
+  --color-primary-text: #FFFFFF;
+
+  /* Accent */
+  --color-accent:       #C5973A;
+  --color-accent-hover: #B5872A;
+  --color-accent-soft:  #FDF6E8;
+
+  /* Green */
+  --color-green:        #3D6B55;
+  --color-green-soft:   #EAF2EC;
+
+  /* Text */
+  --color-text-1:       #1A1410;
+  --color-text-2:       #6B5B52;
+  --color-text-3:       #A89890;
+  --color-text-inv:     #FFFFFF;
+
+  /* Borders */
+  --color-border:       #E8DDD6;
+  --color-border-2:     #D4C4BA;
+
+  /* Semantic */
+  --color-success:      #3D6B55;
+  --color-success-soft: #EAF2EC;
+  --color-error:        #C0392B;
+  --color-error-soft:   #FDECEA;
+  --color-warning:      #C5973A;
+  --color-warning-soft: #FDF6E8;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(26,20,16,0.04);
+  --shadow-sm: 0 1px 4px rgba(26,20,16,0.06), 0 1px 2px rgba(26,20,16,0.04);
+  --shadow-md: 0 4px 12px rgba(26,20,16,0.08), 0 1px 3px rgba(26,20,16,0.05);
+  --shadow-lg: 0 8px 24px rgba(26,20,16,0.10), 0 2px 6px rgba(26,20,16,0.06);
+  --shadow-xl: 0 16px 40px rgba(26,20,16,0.12), 0 4px 10px rgba(26,20,16,0.06);
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Typography */
+  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --text-xs:   11px;
+  --text-sm:   13px;
+  --text-base: 15px;
+  --text-md:   16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  30px;
+  --text-4xl:  36px;
+
+  /* Transitions */
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 350ms ease;
+
+  /* Sidebar */
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 68px;
+
+  /* Legacy compatibility */
+  --aina-background:     var(--color-bg);
+  --aina-card:           var(--color-surface);
+  --aina-primary:        var(--color-primary);
+  --aina-primaryHover:   var(--color-primary-hover);
+  --aina-secondary:      var(--color-green);
+  --aina-gold:           var(--color-accent);
+  --aina-textMain:       var(--color-text-1);
+  --aina-textSecondary:  var(--color-text-2);
+  --aina-border:         var(--color-border);
+  --aina-text-secondary: var(--color-text-2);
+}
+
+/* ============================================
+   GLOBAL RESET & BASE
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--color-text-1);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 520;
+  line-height: 1.25;
+  color: var(--color-text-1);
+  letter-spacing: -0.02em;
+}
+
+/* ============================================
+   SHARED UTILITY CLASSES
+   ============================================ */
+.page-fade-in {
+  animation: pageFadeIn 0.25s ease forwards;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(160,82,45,0.2);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 0 2px 6px rgba(160,82,45,0.3);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text-1);
+  border: 1px solid var(--color-border-2);
+}
+
+.btn-secondary:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-primary);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-2);
+  padding: 8px 12px;
+}
+
+.btn-ghost:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text-1);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+
+.badge-heritage  { background: #FEF3E8; color: #A0522D; }
+.badge-spiritual { background: #F3EAF8; color: #7B2D8B; }
+.badge-art       { background: #E8F2FE; color: #1E5BAD; }
+.badge-food      { background: #FEF9E7; color: #B7770D; }
+.badge-hidden    { background: #E8F5F0; color: #1E7A50; }
+.badge-architecture { background: #EEF2F8; color: #3B5A9A; }
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

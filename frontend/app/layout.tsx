@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Aina - Vadodara Heritage Guide',
+  title: 'AINA - Vadodara Heritage Guide',
   description: 'AI-powered heritage and tourism curator for Vadodara',
 }
 
