@@ -44,23 +44,23 @@ class SupabaseRepository:
         self.url = url.rstrip("/") if url else None
         self.key = key
 
-    def _get(self, table: str, params: dict[str, str]) -> list[dict[str, Any]]:
+    async def _get(self, table: str, params: dict[str, str]) -> list[dict[str, Any]]:
         if not self.url or not self.key:
             raise SupabaseConfigurationError(
                 "SUPABASE_URL and SUPABASE_KEY are required"
             )
         try:
-            response = httpx.get(
-                f"{self.url}/rest/v1/{table}",
-                params=params,
-                headers={
-                    "apikey": self.key,
-                    "Authorization": f"Bearer {self.key}",
-                },
-                timeout=15.0,
-            )
-            response.raise_for_status()
-            data = response.json()
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.get(
+                    f"{self.url}/rest/v1/{table}",
+                    params=params,
+                    headers={
+                        "apikey": self.key,
+                        "Authorization": f"Bearer {self.key}",
+                    },
+                )
+                response.raise_for_status()
+                data = response.json()
         except (httpx.HTTPError, ValueError) as exc:
             raise SupabaseDataError("Supabase read request failed") from exc
         if not isinstance(data, list) or not all(
@@ -69,12 +69,12 @@ class SupabaseRepository:
             raise SupabaseDataError("Supabase returned an unexpected response")
         return data
 
-    def list_places(
+    async def list_places(
         self, *, city: str | None = VADODARA_CITY
     ) -> list[dict[str, Any]]:
         """Return all place records, optionally filtered to a city."""
         params: dict[str, str] = {"select": "*", "order": "name.asc"}
-        rows = self._get("places", params)
+        rows = await self._get("places", params)
         if city is None:
             return rows
         return [
@@ -83,25 +83,26 @@ class SupabaseRepository:
             if city.lower() in str(row.get("city", "")).lower()
         ]
 
-    def get_place_by_id(self, place_id: str) -> dict[str, Any] | None:
-        rows = self._get("places", {"select": "*", "id": f"eq.{quote(place_id)}"})
+    async def get_place_by_id(self, place_id: str) -> dict[str, Any] | None:
+        rows = await self._get("places", {"select": "*", "id": f"eq.{quote(place_id)}"})
         return rows[0] if rows else None
 
-    def find_places_by_name(
+    async def find_places_by_name(
         self, text: str, *, city: str | None = VADODARA_CITY
     ) -> list[dict[str, Any]]:
         """Substring name lookup over place records (retrieval, not ranking)."""
         needle = text.strip().lower()
         if not needle:
             return []
+        rows = await self.list_places(city=city)
         return [
             row
-            for row in self.list_places(city=city)
+            for row in rows
             if str(row.get("name", "")).strip().lower()
             and str(row.get("name", "")).strip().lower() in needle
         ]
 
-    def nearby_places(
+    async def nearby_places(
         self,
         place: dict[str, Any],
         *,
@@ -120,8 +121,9 @@ class SupabaseRepository:
             lng, (int, float)
         ):
             return []
+        rows = await self.list_places(city=city)
         candidates = []
-        for row in self.list_places(city=city):
+        for row in rows:
             if row.get("id") == place.get("id"):
                 continue
             row_lat = row.get("latitude")
@@ -141,14 +143,14 @@ class SupabaseRepository:
         candidates.sort(key=lambda row: row["distance_km"])
         return candidates[:limit]
 
-    def list_food_items(
+    async def list_food_items(
         self, *, city: str | None = VADODARA_CITY
     ) -> list[dict[str, Any]]:
         params: dict[str, str] = {
             "select": "*",
             "order": "food_specialty.asc",
         }
-        rows = self._get("food_items", params)
+        rows = await self._get("food_items", params)
         if city is None:
             return rows
         return [

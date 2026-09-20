@@ -73,22 +73,22 @@ class FakeRepository:
         self._places = places if places is not None else [PALACE, BAUG]
         self._food = food if food is not None else [FOOD]
 
-    def list_places(self, *, city=None):
+    async def list_places(self, *, city=None):
         if city is None:
             return list(self._places)
         return [r for r in self._places if city.lower() in str(r.get("city", "")).lower()]
 
-    def get_place_by_id(self, place_id):
+    async def get_place_by_id(self, place_id):
         for row in self._places:
             if row.get("id") == place_id:
                 return row
         return None
 
-    def find_places_by_name(self, text, *, city=None):
+    async def find_places_by_name(self, text, *, city=None):
         needle = text.strip().lower()
         if not needle:
             return []
-        rows = self.list_places(city=city if city is not None else "Vadodara")
+        rows = await self.list_places(city=city if city is not None else "Vadodara")
         return [
             r
             for r in rows
@@ -96,13 +96,13 @@ class FakeRepository:
             and str(r.get("name", "")).strip().lower() in needle
         ]
 
-    def nearby_places(self, place, *, limit=5, city=None):
+    async def nearby_places(self, place, *, limit=5, city=None):
         # Delegate to the real haversine implementation for realism.
         real = SupabaseRepository("https://example.supabase.co", "key")
         real.list_places = lambda *, city=None: self.list_places(city=city)  # type: ignore
-        return real.nearby_places(place, limit=limit, city=city)
+        return await real.nearby_places(place, limit=limit, city=city)
 
-    def list_food_items(self, *, city=None):
+    async def list_food_items(self, *, city=None):
         if city is None:
             return list(self._food)
         return [r for r in self._food if city.lower() in str(r.get("city", "")).lower()]
@@ -115,7 +115,7 @@ class FakeGemini:
         self.reply = reply
         self.calls = []
 
-    def generate(self, user_message, *, history=None, place_context=None):
+    async def generate(self, user_message, *, history=None, place_context=None):
         self.calls.append(
             {"message": user_message, "history": list(history or []), "place_context": place_context}
         )
@@ -155,6 +155,14 @@ def test_health_check():
     assert response.text == "Aina is running.\n"
 
 
+def test_health_alias():
+    client = TestClient(app)
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.text == "Aina is running.\n"
+
+
+
 def test_configuration_loads_from_env(monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     monkeypatch.setenv("GEMINI_MODEL", "gemini-test")
@@ -165,6 +173,43 @@ def test_configuration_loads_from_env(monkeypatch):
     assert settings.gemini_model == "gemini-test"
     assert settings.supabase_url == "https://example.supabase.co"
     assert settings.supabase_key == "test-key"
+
+
+def test_cloudflare_worker_env_bridge():
+    """Verify that Cloudflare Worker env dictionary and object bindings configure app clients."""
+    # Test dictionary bindings
+    dict_env = {
+        "GEMINI_API_KEY": "cf-dict-key",
+        "GEMINI_MODEL": "cf-dict-model",
+        "SUPABASE_URL": "https://cf-dict.supabase.co",
+        "SUPABASE_KEY": "cf-dict-skey",
+        "AINA_ENV": "production",
+    }
+    app_module.configure_app(dict_env)
+    assert app_module.settings.gemini_api_key == "cf-dict-key"
+    assert app_module.settings.gemini_model == "cf-dict-model"
+    assert app_module.settings.supabase_url == "https://cf-dict.supabase.co"
+    assert app_module.settings.supabase_key == "cf-dict-skey"
+    assert app_module.settings.environment == "production"
+    assert app_module.gemini_client.api_key == "cf-dict-key"
+    assert app_module.data_repository.url == "https://cf-dict.supabase.co"
+
+    # Test object bindings (as provided by Cloudflare Worker runtime env instance)
+    class WorkerEnvObject:
+        GEMINI_API_KEY = "cf-obj-key"
+        GEMINI_MODEL = "cf-obj-model"
+        SUPABASE_URL = "https://cf-obj.supabase.co"
+        SUPABASE_KEY = "cf-obj-skey"
+        AINA_ENV = "production"
+
+    app_module.configure_app(WorkerEnvObject())
+    assert app_module.settings.gemini_api_key == "cf-obj-key"
+    assert app_module.settings.gemini_model == "cf-obj-model"
+    assert app_module.settings.supabase_url == "https://cf-obj.supabase.co"
+    assert app_module.settings.supabase_key == "cf-obj-skey"
+    assert app_module.gemini_client.api_key == "cf-obj-key"
+    assert app_module.data_repository.url == "https://cf-obj.supabase.co"
+
 
 
 # ---------------------------------------------------------------------------
@@ -273,7 +318,7 @@ def test_chat_missing_gemini_config_returns_503(monkeypatch, conversations):
 
 def test_chat_gemini_api_error_returns_502(monkeypatch, conversations):
     class Exploding:
-        def generate(self, *args, **kwargs):
+        async def generate(self, *args, **kwargs):
             raise GeminiAPIError("boom")
 
     monkeypatch.setattr(app_module, "conversations", conversations)
@@ -288,16 +333,16 @@ def test_chat_supabase_unavailable_still_responds(monkeypatch, conversations):
     """Retrieval failure degrades to a fallback context string, not an error."""
 
     class BrokenRepo(FakeRepository):
-        def list_places(self, *, city=None):
+        async def list_places(self, *, city=None):
             raise SupabaseConfigurationError("SUPABASE_URL and SUPABASE_KEY are required")
 
-        def find_places_by_name(self, text, *, city=None):
+        async def find_places_by_name(self, text, *, city=None):
             return []
 
-        def nearby_places(self, place, *, limit=5, city=None):
+        async def nearby_places(self, place, *, limit=5, city=None):
             return []
 
-        def list_food_items(self, *, city=None):
+        async def list_food_items(self, *, city=None):
             return []
 
     fake_gemini = FakeGemini(reply="Still helpful.")
@@ -469,10 +514,10 @@ def test_food_endpoint(monkeypatch):
 
 def test_data_config_error_maps_to_503(monkeypatch):
     class Broken(FakeRepository):
-        def list_places(self, *, city=None):
+        async def list_places(self, *, city=None):
             raise SupabaseConfigurationError("missing")
 
-        def list_food_items(self, *, city=None):
+        async def list_food_items(self, *, city=None):
             raise SupabaseConfigurationError("missing")
 
     monkeypatch.setattr(app_module, "data_repository", Broken())
@@ -483,10 +528,10 @@ def test_data_config_error_maps_to_503(monkeypatch):
 
 def test_data_error_maps_to_502(monkeypatch):
     class Broken(FakeRepository):
-        def list_places(self, *, city=None):
+        async def list_places(self, *, city=None):
             raise SupabaseDataError("read failed")
 
-        def list_food_items(self, *, city=None):
+        async def list_food_items(self, *, city=None):
             raise SupabaseDataError("read failed")
 
     monkeypatch.setattr(app_module, "data_repository", Broken())
@@ -500,14 +545,16 @@ def test_data_error_maps_to_502(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_gemini_missing_config():
+@pytest.mark.anyio
+async def test_gemini_missing_config():
     with pytest.raises(GeminiConfigurationError):
-        GeminiClient(None, "m").generate("hi")
+        await GeminiClient(None, "m").generate("hi")
     with pytest.raises(GeminiConfigurationError):
-        GeminiClient("k", None).generate("hi")
+        await GeminiClient("k", None).generate("hi")
 
 
-def test_gemini_success_sends_system_history_and_context(monkeypatch):
+@pytest.mark.anyio
+async def test_gemini_success_sends_system_history_and_context(monkeypatch):
     captured = {}
 
     class FakeResponse:
@@ -519,15 +566,15 @@ def test_gemini_success_sends_system_history_and_context(monkeypatch):
         def json(self):
             return {"candidates": [{"content": {"parts": [{"text": "hello"}]}}]}
 
-    def fake_post(url, *, headers, json, timeout):
+    async def fake_post(self, url, *, headers=None, json=None, **kwargs):
         captured["url"] = url
         captured["headers"] = headers
         captured["json"] = json
         return FakeResponse()
 
-    monkeypatch.setattr("aina.gemini.httpx.post", fake_post)
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_post)
     client = GeminiClient("key", "model-x")
-    reply = client.generate(
+    reply = await client.generate(
         "What is nearby?",
         history=[{"role": "user", "content": "hi"}, {"role": "assistant", "content": "hello"}],
         place_context="catalog text",
@@ -541,7 +588,8 @@ def test_gemini_success_sends_system_history_and_context(monkeypatch):
     assert "catalog text" in captured["json"]["contents"][-1]["parts"][0]["text"]
 
 
-def test_gemini_translates_errors(monkeypatch):
+@pytest.mark.anyio
+async def test_gemini_translates_errors(monkeypatch):
     import httpx
 
     client = GeminiClient("k", "m")
@@ -552,16 +600,19 @@ def test_gemini_translates_errors(monkeypatch):
         def raise_for_status(self):
             return None
 
-    monkeypatch.setattr("aina.gemini.httpx.post", lambda *a, **k: Auth())
-    with pytest.raises(GeminiAPIError, match="authentication"):
-        client.generate("hi")
+    async def fake_auth(self, *a, **k):
+        return Auth()
 
-    def timeout(*a, **k):
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_auth)
+    with pytest.raises(GeminiAPIError, match="authentication"):
+        await client.generate("hi")
+
+    async def timeout(self, *a, **k):
         raise httpx.TimeoutException("t")
 
-    monkeypatch.setattr("aina.gemini.httpx.post", timeout)
+    monkeypatch.setattr("httpx.AsyncClient.post", timeout)
     with pytest.raises(GeminiAPIError, match="timed out"):
-        client.generate("hi")
+        await client.generate("hi")
 
     class Bad:
         status_code = 200
@@ -572,9 +623,12 @@ def test_gemini_translates_errors(monkeypatch):
         def json(self):
             return {"candidates": []}
 
-    monkeypatch.setattr("aina.gemini.httpx.post", lambda *a, **k: Bad())
+    async def fake_bad(self, *a, **k):
+        return Bad()
+
+    monkeypatch.setattr("httpx.AsyncClient.post", fake_bad)
     with pytest.raises(GeminiAPIError, match="no text"):
-        client.generate("hi")
+        await client.generate("hi")
 
 
 # ---------------------------------------------------------------------------
@@ -582,55 +636,59 @@ def test_gemini_translates_errors(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_supabase_missing_config():
+@pytest.mark.anyio
+async def test_supabase_missing_config():
     repo = SupabaseRepository(None, None)
     with pytest.raises(SupabaseConfigurationError):
-        repo.list_places()
+        await repo.list_places()
 
 
-def test_supabase_city_filter_and_name_lookup(monkeypatch):
+@pytest.mark.anyio
+async def test_supabase_city_filter_and_name_lookup(monkeypatch):
     repo = SupabaseRepository("https://example.supabase.co", "key")
     rows = [
         {"id": "H001", "name": "Laxmi Vilas Palace", "city": "Vadodara"},
         {"id": "H002", "name": "Other", "city": "Mumbai"},
     ]
-    monkeypatch.setattr(repo, "_get", lambda table, params: rows)
-    assert len(repo.list_places()) == 1
-    assert repo.list_places(city=None) == rows
-    assert repo.get_place_by_id("H001")["name"] == "Laxmi Vilas Palace"
-    found = repo.find_places_by_name("Tell me about Laxmi Vilas Palace please")
+    async def fake_get(table, params):
+        return rows
+    monkeypatch.setattr(repo, "_get", fake_get)
+    assert len(await repo.list_places()) == 1
+    assert await repo.list_places(city=None) == rows
+    assert (await repo.get_place_by_id("H001"))["name"] == "Laxmi Vilas Palace"
+    found = await repo.find_places_by_name("Tell me about Laxmi Vilas Palace please")
     assert [r["id"] for r in found] == ["H001"]
-    assert repo.find_places_by_name("   ") == []
+    assert await repo.find_places_by_name("   ") == []
 
 
-def test_supabase_nearby_sorts_by_distance(monkeypatch):
+@pytest.mark.anyio
+async def test_supabase_nearby_sorts_by_distance(monkeypatch):
     repo = SupabaseRepository("https://example.supabase.co", "key")
-    monkeypatch.setattr(
-        repo,
-        "_get",
-        lambda table, params: [
+    async def fake_get(table, params):
+        return [
             {"id": "H001", "name": "A", "city": "Vadodara", "latitude": 22.30, "longitude": 73.18},
             {"id": "H002", "name": "B", "city": "Vadodara", "latitude": 22.31, "longitude": 73.18},
             {"id": "H003", "name": "C", "city": "Vadodara", "latitude": 23.00, "longitude": 74.00},
-        ],
-    )
+        ]
+    monkeypatch.setattr(repo, "_get", fake_get)
     anchor = {"id": "H001", "latitude": 22.30, "longitude": 73.18}
-    nearby = repo.nearby_places(anchor, limit=2)
+    nearby = await repo.nearby_places(anchor, limit=2)
     assert [r["id"] for r in nearby] == ["H002", "H003"]
     assert all("distance_km" in r for r in nearby)
-    assert repo.nearby_places({"id": "X"}) == []
+    assert await repo.nearby_places({"id": "X"}) == []
 
 
-def test_supabase_http_error_translation(monkeypatch):
+@pytest.mark.anyio
+async def test_supabase_http_error_translation(monkeypatch):
     import httpx
 
-    def fail(*args, **kwargs):
+    async def fail(self, *args, **kwargs):
         raise httpx.ConnectError("down")
 
-    monkeypatch.setattr("aina.supabase.httpx.get", fail)
+    monkeypatch.setattr("httpx.AsyncClient.get", fail)
     repo = SupabaseRepository("https://example.supabase.co", "key")
     with pytest.raises(SupabaseDataError):
-        repo.list_places()
+        await repo.list_places()
 
 
 def test_formatters():

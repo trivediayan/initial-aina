@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+from typing import Any
+
+
 @dataclass(frozen=True)
 class Settings:
     environment: str
@@ -18,13 +21,24 @@ class Settings:
     supabase_key: str | None
 
 
-def get_settings() -> Settings:
-    """Return the current application settings."""
+def get_settings(env: Any = None) -> Settings:
+    """Return application settings from Worker env or os.environ."""
+    def _get(key: str, default: str | None = None) -> str | None:
+        if env is not None:
+            if isinstance(env, dict):
+                val = env.get(key)
+            else:
+                val = getattr(env, key, None)
+            if val is not None:
+                return str(val)
+        return os.getenv(key, default)
+
     return Settings(
-        environment=os.getenv("AINA_ENV", "development"),
-        log_level=os.getenv("AINA_LOG_LEVEL", "info"),
-        gemini_api_key=os.getenv("GEMINI_API_KEY") or None,
-        gemini_model=os.getenv("GEMINI_MODEL") or None,
-        supabase_url=os.getenv("SUPABASE_URL") or None,
-        supabase_key=os.getenv("SUPABASE_KEY") or None,
+        environment=_get("AINA_ENV", "development") or "development",
+        log_level=_get("AINA_LOG_LEVEL", "info") or "info",
+        gemini_api_key=_get("GEMINI_API_KEY") or None,
+        gemini_model=_get("GEMINI_MODEL") or None,
+        supabase_url=_get("SUPABASE_URL") or None,
+        supabase_key=_get("SUPABASE_KEY") or None,
     )
+

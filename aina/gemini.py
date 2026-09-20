@@ -44,7 +44,7 @@ class GeminiClient:
         self.api_key = api_key
         self.model = model
 
-    def generate(
+    async def generate(
         self,
         user_message: str,
         *,
@@ -80,22 +80,22 @@ class GeminiClient:
         contents.append({"role": "user", "parts": [{"text": message}]})
 
         try:
-            response = httpx.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent",
-                headers={
-                    "x-goog-api-key": self.api_key,
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "system_instruction": {"parts": [{"text": AINA_SYSTEM_PROMPT}]},
-                    "contents": contents,
-                },
-                timeout=60.0,
-            )
-            if response.status_code in (401, 403):
-                raise GeminiAPIError("Gemini authentication failed")
-            response.raise_for_status()
-            payload = response.json()
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent",
+                    headers={
+                        "x-goog-api-key": self.api_key,
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "system_instruction": {"parts": [{"text": AINA_SYSTEM_PROMPT}]},
+                        "contents": contents,
+                    },
+                )
+                if response.status_code in (401, 403):
+                    raise GeminiAPIError("Gemini authentication failed")
+                response.raise_for_status()
+                payload = response.json()
         except (httpx.TimeoutException, httpx.NetworkError) as exc:
             raise GeminiAPIError("Gemini request timed out or failed") from exc
         except httpx.HTTPStatusError as exc:

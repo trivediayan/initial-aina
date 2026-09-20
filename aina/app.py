@@ -19,11 +19,13 @@ itinerary builder, or any other intelligence layer between the user and
 Gemini.
 """
 
-from fastapi import FastAPI, HTTPException
+from typing import Any
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
-from aina.config import get_settings
+from aina.config import Settings, get_settings
 from aina.conversation import ConversationStore
 from aina.gemini import GeminiAPIError, GeminiClient, GeminiConfigurationError
 from aina.models import ChatRequest, ChatResponse
@@ -36,10 +38,23 @@ from aina.supabase import (
     format_place_detail,
 )
 
-settings = get_settings()
-data_repository = SupabaseRepository(settings.supabase_url, settings.supabase_key)
-gemini_client = GeminiClient(settings.gemini_api_key, settings.gemini_model)
-conversations = ConversationStore()
+settings: Settings = get_settings()
+data_repository: SupabaseRepository = SupabaseRepository(
+    settings.supabase_url, settings.supabase_key
+)
+gemini_client: GeminiClient = GeminiClient(
+    settings.gemini_api_key, settings.gemini_model
+)
+conversations: ConversationStore = ConversationStore()
+
+
+def configure_app(env: Any = None) -> None:
+    """Reconfigure repositories and clients with environment bindings."""
+    global settings, data_repository, gemini_client
+    settings = get_settings(env)
+    data_repository = SupabaseRepository(settings.supabase_url, settings.supabase_key)
+    gemini_client = GeminiClient(settings.gemini_api_key, settings.gemini_model)
+
 
 app = FastAPI(
     title="Aina",
@@ -55,6 +70,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def cloudflare_env_middleware(request: Request, call_next: Any) -> Any:
+    """Bridge Cloudflare Worker secrets from ASGI scope into runtime clients."""
+    scope_env = request.scope.get("env")
+    if scope_env is not None:
+        configure_app(scope_env)
+    return await call_next(request)
+
+
 NEARBY_WORDS = ("nearby", "near ", " near", "around", "close by", "close to", "walking distance")
 FOOD_WORDS = (
     "food", "eat", "eating", "lunch", "dinner", "breakfast",
@@ -67,36 +92,36 @@ def _mentions(text: str, words: tuple[str, ...]) -> bool:
     return any(word in lowered for word in words)
 
 
-def _anchor_place(message: str, history: list[dict[str, str]]) -> dict | None:
+async def _anchor_place(message: str, history: list[dict[str, str]]) -> dict | None:
     """Find a place record the user is likely talking about (retrieval only)."""
-    matches = data_repository.find_places_by_name(message)
+    matches = await data_repository.find_places_by_name(message)
     if matches:
         return matches[0]
     for turn in reversed(history):
         if turn.get("role") != "user":
             continue
-        matches = data_repository.find_places_by_name(turn.get("content", ""))
+        matches = await data_repository.find_places_by_name(turn.get("content", ""))
         if matches:
             return matches[0]
     return None
 
 
-def _place_context(message: str, history: list[dict[str, str]]) -> str:
+async def _place_context(message: str, history: list[dict[str, str]]) -> str:
     """Assemble Vadodara data text for Gemini. Retrieval only — no decisions."""
     sections: list[str] = []
     try:
-        places = data_repository.list_places()
+        places = await data_repository.list_places()
     except (SupabaseConfigurationError, SupabaseDataError):
         return "Vadodara place data is currently unavailable."
     sections.append(format_place_catalog(places))
 
-    for place in data_repository.find_places_by_name(message):
+    for place in await data_repository.find_places_by_name(message):
         sections.append(format_place_detail(place))
 
     if _mentions(message, NEARBY_WORDS):
-        anchor = _anchor_place(message, history)
+        anchor = await _anchor_place(message, history)
         if anchor is not None:
-            nearby = data_repository.nearby_places(anchor)
+            nearby = await data_repository.nearby_places(anchor)
             if nearby:
                 sections.append(
                     f"Places near {anchor.get('name')} "
@@ -105,17 +130,18 @@ def _place_context(message: str, history: list[dict[str, str]]) -> str:
                 )
 
     if _mentions(message, FOOD_WORDS):
-        sections.append(format_food_items(data_repository.list_food_items()))
+        food_items = await data_repository.list_food_items()
+        sections.append(format_food_items(food_items))
 
     return "\n\n".join(sections)
 
 
-def _chat(message: str, conversation_id: str | None) -> ChatResponse:
+async def _chat(message: str, conversation_id: str | None) -> ChatResponse:
     session_id, history = conversations.get_or_create(conversation_id)
     past = list(history)
-    context = _place_context(message, past)
+    context = await _place_context(message, past)
     try:
-        reply = gemini_client.generate(message, history=past, place_context=context)
+        reply = await gemini_client.generate(message, history=past, place_context=context)
     except GeminiConfigurationError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except GeminiAPIError as exc:
@@ -130,16 +156,22 @@ def health_check() -> str:
     return "Aina is running.\n"
 
 
+@app.get("/health", response_class=PlainTextResponse)
+def health_check_alias() -> str:
+    """Alias for / to support standard health probes."""
+    return "Aina is running.\n"
+
+
 @app.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest) -> ChatResponse:
+async def chat(request: ChatRequest) -> ChatResponse:
     """Chat with Aina. Gemini handles all conversational understanding."""
-    return _chat(request.message, request.conversation_id)
+    return await _chat(request.message, request.conversation_id)
 
 
 @app.post("/plan", response_model=ChatResponse)
-def plan(request: ChatRequest) -> ChatResponse:
+async def plan(request: ChatRequest) -> ChatResponse:
     """Backward-compatible alias for /chat (same conversational behavior)."""
-    return _chat(request.message, request.conversation_id)
+    return await _chat(request.message, request.conversation_id)
 
 
 def _data_error(exc: RuntimeError) -> HTTPException:
@@ -148,20 +180,20 @@ def _data_error(exc: RuntimeError) -> HTTPException:
 
 
 @app.get("/places")
-def places() -> dict[str, object]:
+async def places() -> dict[str, object]:
     """Raw Vadodara place records (data access, no recommendations)."""
     try:
-        rows = data_repository.list_places()
+        rows = await data_repository.list_places()
     except (SupabaseConfigurationError, SupabaseDataError) as exc:
         raise _data_error(exc) from exc
     return {"places": rows, "count": len(rows)}
 
 
 @app.get("/places/{place_id}")
-def place(place_id: str) -> dict[str, object]:
+async def place(place_id: str) -> dict[str, object]:
     """Raw record for one place (data access)."""
     try:
-        row = data_repository.get_place_by_id(place_id)
+        row = await data_repository.get_place_by_id(place_id)
     except (SupabaseConfigurationError, SupabaseDataError) as exc:
         raise _data_error(exc) from exc
     if row is None:
@@ -170,10 +202,11 @@ def place(place_id: str) -> dict[str, object]:
 
 
 @app.get("/food")
-def food() -> dict[str, object]:
+async def food() -> dict[str, object]:
     """Raw Vadodara food records (data access)."""
     try:
-        rows = data_repository.list_food_items()
+        rows = await data_repository.list_food_items()
     except (SupabaseConfigurationError, SupabaseDataError) as exc:
         raise _data_error(exc) from exc
     return {"food": rows, "count": len(rows)}
+
