@@ -24,7 +24,8 @@ export function LoginPage() {
       await login({ email, password })
       navigate(ROUTES.welcome)
     } catch (err) {
-      // Error is handled by auth context
+      // Error is set in auth context state and will be displayed
+      console.error('Login failed:', err)
     }
   }
 
