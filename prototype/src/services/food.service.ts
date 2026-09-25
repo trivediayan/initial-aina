@@ -114,8 +114,12 @@ export const foodService = {
       path: API_ENDPOINTS.food,
     })
 
-    if (!apiRes.ok || !apiRes.data) {
+    if (!apiRes.ok) {
       throw new Error(apiRes.message || 'Failed to load food from the canonical backend.')
+    }
+
+    if (!apiRes.data) {
+      throw new Error('Canonical backend returned an empty food response.')
     }
 
     const rawList = Array.isArray(apiRes.data)
