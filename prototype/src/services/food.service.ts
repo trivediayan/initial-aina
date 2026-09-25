@@ -106,46 +106,32 @@ let foodStore: Food[] = []
 
 export const foodService = {
   /**
-   * Fetch all authentic food items from GET /api/v1/food (or Supabase).
+   * Fetch food strictly from the canonical backend.
+   * No Supabase fallback, mock data, or stale in-memory fallback is allowed.
    */
   async fetchFood(): Promise<Food[]> {
-    // 1. Try Backend API client
     const apiRes = await apiRequest<{ food?: Record<string, unknown>[]; count?: number } | Record<string, unknown>[]>({
       path: API_ENDPOINTS.food,
     })
 
-    if (apiRes.ok && apiRes.data) {
-      const rawList = Array.isArray(apiRes.data)
-        ? apiRes.data
-        : Array.isArray(apiRes.data.food)
-          ? apiRes.data.food
-          : []
-      if (rawList.length > 0) {
-        const items = rawList.map(mapRowToFood)
-        foodStore = items
-        notifyFoodUpdated()
-        return items
-      }
+    if (!apiRes.ok || !apiRes.data) {
+      throw new Error(apiRes.message || 'Failed to load food from the canonical backend.')
     }
 
-    // 2. Query Supabase directly
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('food_items')
-        .select('*')
-        .order('item_number', { ascending: true })
+    const rawList = Array.isArray(apiRes.data)
+      ? apiRes.data
+      : Array.isArray(apiRes.data.food)
+        ? apiRes.data.food
+        : []
 
-      if (!error && data) {
-        const items = (data as Record<string, unknown>[]).map(mapRowToFood)
-        foodStore = items
-        notifyFoodUpdated()
-        return items
-      } else if (error) {
-        console.error('Failed to fetch food items from Supabase:', error.message)
-      }
+    if (rawList.length === 0) {
+      throw new Error('Canonical backend returned no food records.')
     }
 
-    return foodStore
+    const items = rawList.map(mapRowToFood)
+    foodStore = items
+    notifyFoodUpdated()
+    return items
   },
 
   /**
