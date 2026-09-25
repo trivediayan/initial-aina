@@ -127,8 +127,12 @@ export const mapService = {
       path: API_ENDPOINTS.places(layer),
     })
 
-    if (!apiRes.ok || !apiRes.data) {
+    if (!apiRes.ok) {
       throw new Error(apiRes.message || `Failed to load ${layer} places from the canonical backend.`)
+    }
+
+    if (!apiRes.data) {
+      throw new Error(`Canonical backend returned an empty response for layer "${layer}".`)
     }
 
     const rawList = Array.isArray(apiRes.data)
