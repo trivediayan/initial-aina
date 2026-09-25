@@ -15,21 +15,54 @@ export function HiddenGemsPage() {
   const { user } = useAuth()
   const goToMap = useInternalNavigate()
   const [gems, setGems] = useState<HiddenGem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [tick, setTick] = useState(0)
 
   useEffect(() => {
-    const syncGems = () => setGems(hiddenGemsService.getHiddenGems())
-    syncGems()
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    hiddenGemsService
+      .fetchHiddenGems()
+      .then((data) => {
+        if (!cancelled) {
+          setGems(data)
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load hidden gems.')
+          setLoading(false)
+        }
+      })
+
+    const syncGems = () => {
+      if (!cancelled) {
+        setGems(hiddenGemsService.getHiddenGems())
+      }
+    }
     window.addEventListener('ayna:hidden-gems-updated', syncGems)
-    return () => window.removeEventListener('ayna:hidden-gems-updated', syncGems)
+
+    return () => {
+      cancelled = true
+      window.removeEventListener('ayna:hidden-gems-updated', syncGems)
+    }
   }, [])
 
-  const filteredGems = useMemo(() => gems.filter((gem) =>
-    gem.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    gem.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    gem.culturalInformation.toLowerCase().includes(searchQuery.toLowerCase()),
-  ), [gems, searchQuery])
+  const filteredGems = useMemo(
+    () =>
+      gems.filter(
+        (gem) =>
+          gem.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          gem.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          gem.culturalInformation.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [gems, searchQuery],
+  )
 
   const handleNavigate = (gem: HiddenGem) => {
     goToMap({
@@ -38,7 +71,7 @@ export function HiddenGemsPage() {
       name: gem.name,
       description: gem.description,
       category: 'hidden',
-      image: gem.image,
+      image: gem.image_url || gem.image,
     })
   }
 
@@ -62,7 +95,7 @@ export function HiddenGemsPage() {
             <p>Quieter corners of Vadodara most visitors miss</p>
           </div>
           <div className="collection-hero-stat">
-            <strong>{filteredGems.length.toString().padStart(2, '0')}</strong>
+            <strong>{loading ? '...' : filteredGems.length.toString().padStart(2, '0')}</strong>
             <span>quiet places</span>
           </div>
         </div>
@@ -77,49 +110,64 @@ export function HiddenGemsPage() {
           />
         </div>
 
-        <div className="gems-grid">
-          {filteredGems.map((gem) => {
-            const explored = user ? explorationService.isExplored(user.id, `gem:${gem.id}`) : false
-            return (
-              <article
-                key={`${gem.id}-${tick}`}
-                className="gem-card card"
-                role="link"
-                tabIndex={0}
-                onClick={() => handleOpenDetails(gem)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') handleOpenDetails(gem)
-                }}
-              >
-                <SmartImage src={gem.image} alt={gem.name} className="gem-image" />
-                <div className="gem-content">
-                  <div className="gem-header">
-                    <h3 className="gem-name">{gem.name}</h3>
-                    <span className="gem-distance">{gem.distance}</span>
+        {loading ? (
+          <div className="empty-state">
+            <p>Loading hidden gems...</p>
+          </div>
+        ) : error ? (
+          <div className="empty-state">
+            <p>Unable to load hidden gems: {error}</p>
+          </div>
+        ) : filteredGems.length === 0 ? (
+          <div className="empty-state">
+            <p>{gems.length === 0 ? 'No hidden gems found.' : 'No matches. Try another search.'}</p>
+          </div>
+        ) : (
+          <div className="gems-grid">
+            {filteredGems.map((gem) => {
+              const explored = user ? explorationService.isExplored(user.id, `gem:${gem.id}`) : false
+              const displayImage = gem.image_url || gem.image
+              return (
+                <article
+                  key={`${gem.id}-${tick}`}
+                  className="gem-card card"
+                  role="link"
+                  tabIndex={0}
+                  onClick={() => handleOpenDetails(gem)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') handleOpenDetails(gem)
+                  }}
+                >
+                  <SmartImage src={displayImage} alt={gem.name} className="gem-image" />
+                  <div className="gem-content">
+                    <div className="gem-header">
+                      <h3 className="gem-name">{gem.name}</h3>
+                      <span className="gem-distance">{gem.distance}</span>
+                    </div>
+                    <p className="gem-description">{gem.description}</p>
+                    <div className="gem-section">
+                      <h4>Why it stays hidden</h4>
+                      <p>{gem.whyHidden}</p>
+                    </div>
+                    <div className="gem-details">
+                      <div className="gem-detail"><Clock size={14} /> {gem.explorationTime}</div>
+                      {gem.bestTime && <div className="gem-detail"><Sun size={14} /> {gem.bestTime}</div>}
+                    </div>
+                    <div className="gem-actions">
+                      <button className="btn btn-secondary" onClick={(event) => { event.stopPropagation(); handleExplored(gem) }} disabled={explored}>
+                        {explored ? <Check size={15} /> : <Compass size={15} />}
+                        {explored ? 'Explored' : "I've explored this"}
+                      </button>
+                      <button className="btn btn-primary" onClick={(event) => { event.stopPropagation(); handleNavigate(gem) }}>
+                        <Navigation size={15} /> Navigate
+                      </button>
+                    </div>
                   </div>
-                  <p className="gem-description">{gem.description}</p>
-                  <div className="gem-section">
-                    <h4>Why it stays hidden</h4>
-                    <p>{gem.whyHidden}</p>
-                  </div>
-                  <div className="gem-details">
-                    <div className="gem-detail"><Clock size={14} /> {gem.explorationTime}</div>
-                    <div className="gem-detail"><Sun size={14} /> {gem.bestTime}</div>
-                  </div>
-                  <div className="gem-actions">
-                    <button className="btn btn-secondary" onClick={(event) => { event.stopPropagation(); handleExplored(gem) }} disabled={explored}>
-                      {explored ? <Check size={15} /> : <Compass size={15} />}
-                      {explored ? 'Explored' : "I've explored this"}
-                    </button>
-                    <button className="btn btn-primary" onClick={(event) => { event.stopPropagation(); handleNavigate(gem) }}>
-                      <Navigation size={15} /> Navigate
-                    </button>
-                  </div>
-                </div>
-              </article>
-            )
-          })}
-        </div>
+                </article>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

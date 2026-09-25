@@ -15,27 +15,55 @@ export function FoodPage() {
   const { user } = useAuth()
   const goToMap = useInternalNavigate()
   const [foodItems, setFoodItems] = useState<Food[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFoodType, setSelectedFoodType] = useState<string>('all')
   const [exploredTick, setExploredTick] = useState(0)
 
   useEffect(() => {
-    const syncFood = () => setFoodItems(foodService.getFood())
-    syncFood()
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    foodService
+      .fetchFood()
+      .then((data) => {
+        if (!cancelled) {
+          setFoodItems(data)
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load food items.')
+          setLoading(false)
+        }
+      })
+
+    const syncFood = () => {
+      if (!cancelled) {
+        setFoodItems(foodService.getFood())
+      }
+    }
     window.addEventListener('ayna:food-updated', syncFood)
-    return () => window.removeEventListener('ayna:food-updated', syncFood)
+
+    return () => {
+      cancelled = true
+      window.removeEventListener('ayna:food-updated', syncFood)
+    }
   }, [])
 
-  const foodTypes = ['all', ...Array.from(new Set(foodItems.map((f) => f.foodType)))]
+  const foodTypes = ['all', ...Array.from(new Set(foodItems.map((f) => f.foodType).filter(Boolean)))]
 
-  const filteredFood = useMemo(() => foodItems.filter((food) => {
-    const matchesSearch =
-      food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      food.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      food.location.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = selectedFoodType === 'all' || food.foodType === selectedFoodType
-    return matchesSearch && matchesType
-  }), [foodItems, searchQuery, selectedFoodType])
+  const filteredFood = useMemo(() => {
+    return foodItems.filter((food) => {
+      const haystack = `${food.name} ${food.specialty} ${food.location} ${food.foodType}`.toLowerCase()
+      const matchesSearch = !searchQuery.trim() || haystack.includes(searchQuery.toLowerCase())
+      const matchesType = selectedFoodType === 'all' || food.foodType === selectedFoodType
+      return matchesSearch && matchesType
+    })
+  }, [foodItems, searchQuery, selectedFoodType])
 
   const handleNavigate = (food: Food) => {
     goToMap({
@@ -44,7 +72,7 @@ export function FoodPage() {
       name: food.name,
       description: food.specialty,
       category: 'food',
-      image: food.image,
+      image: food.image_url || food.image,
     })
   }
 
@@ -68,7 +96,7 @@ export function FoodPage() {
             <p>Vadodara and Gujarati flavours worth a detour</p>
           </div>
           <div className="collection-hero-stat">
-            <strong>{filteredFood.length.toString().padStart(2, '0')}</strong>
+            <strong>{loading ? '...' : filteredFood.length.toString().padStart(2, '0')}</strong>
             <span>places to eat</span>
           </div>
         </div>
@@ -99,14 +127,23 @@ export function FoodPage() {
           </div>
         </div>
 
-        {filteredFood.length === 0 ? (
+        {loading ? (
           <div className="empty-state">
-            <p>No matches. Try another search.</p>
+            <p>Loading authentic food spots...</p>
+          </div>
+        ) : error ? (
+          <div className="empty-state">
+            <p>Unable to load food spots: {error}</p>
+          </div>
+        ) : filteredFood.length === 0 ? (
+          <div className="empty-state">
+            <p>{foodItems.length === 0 ? 'No food items found.' : 'No matches. Try another search.'}</p>
           </div>
         ) : (
           <div className="food-grid">
             {filteredFood.map((food) => {
               const explored = user ? explorationService.isExplored(user.id, `food:${food.id}`) : false
+              const displayImage = food.image_url || food.image
               return (
                 <article
                   key={`${food.id}-${exploredTick}`}
@@ -118,7 +155,7 @@ export function FoodPage() {
                     if (event.key === 'Enter' || event.key === ' ') handleOpenDetails(food)
                   }}
                 >
-                  <SmartImage src={food.image} alt={food.name} className="food-image" />
+                  <SmartImage src={displayImage} alt={food.name} className="food-image" />
                   <div className="food-content">
                     <div className="food-header-row">
                       <h3 className="food-name">{food.name}</h3>
@@ -133,10 +170,12 @@ export function FoodPage() {
                       <div className="food-detail"><Clock size={14} /> {food.openingHours}</div>
                     </div>
 
-                    <div className="food-recommendation">
-                      <Sparkles size={14} />
-                      <p>{food.whyAINARecommends}</p>
-                    </div>
+                    {food.whyAINARecommends && (
+                      <div className="food-recommendation">
+                        <Sparkles size={14} />
+                        <p>{food.whyAINARecommends}</p>
+                      </div>
+                    )}
 
                     <div className="food-actions">
                       <button className="btn btn-secondary" onClick={(event) => { event.stopPropagation(); handleExplored(food) }} disabled={explored}>

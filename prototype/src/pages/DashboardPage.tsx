@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight, Compass, Layers3, MapPinned, Sparkles } from 'lucide-react'
 import { Map } from '@/components/dashboard/Map'
 import { getMapItems, toDetailPath, type MapItem } from '@/services/catalog.service'
+import { mapService } from '@/services/map.service'
+import { foodService } from '@/services/food.service'
 import { useMap } from '@/contexts/MapContext'
 import type { PlaceCategory } from '@/types/dashboard.types'
 import './DashboardPage.css'
@@ -25,6 +27,11 @@ export function DashboardPage() {
   const [recommendationPlaces, setRecommendationPlaces] = useState<MapItem[]>([])
 
   useEffect(() => {
+    void mapService.fetchAllPlaces()
+    void foodService.fetchFood()
+  }, [])
+
+  useEffect(() => {
     const syncRecommendations = () => {
       const baseItems = getMapItems(selectedCategory)
       const query = searchQuery.trim().toLowerCase()
@@ -41,7 +48,11 @@ export function DashboardPage() {
 
     syncRecommendations()
     window.addEventListener('ayna:places-updated', syncRecommendations)
-    return () => window.removeEventListener('ayna:places-updated', syncRecommendations)
+    window.addEventListener('ayna:food-updated', syncRecommendations)
+    return () => {
+      window.removeEventListener('ayna:places-updated', syncRecommendations)
+      window.removeEventListener('ayna:food-updated', syncRecommendations)
+    }
   }, [selectedCategory, searchQuery])
 
   const featuredPlace = recommendationPlaces[0]

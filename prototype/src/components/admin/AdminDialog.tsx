@@ -22,26 +22,28 @@ export function AdminDialog({ isOpen, onClose, title, children, size = 'md' }: A
     }
   }, [isOpen])
 
-  if (!isOpen) return null
-
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose()
     }
   }
 
-  const handleEscapeKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose()
-    }
-  }
-
   useEffect(() => {
+    if (!isOpen) return
+
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
     document.addEventListener('keydown', handleEscapeKey)
     return () => {
       document.removeEventListener('keydown', handleEscapeKey)
     }
-  }, [])
+  }, [isOpen, onClose])
+
+  if (!isOpen) return null
 
   return (
     <div className="admin-dialog-overlay" onClick={handleOverlayClick}>

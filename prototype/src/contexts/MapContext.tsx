@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import type { ReactNode } from 'react'
-import { hydratePlacesFromSupabase } from '@/services/map.service'
+import { mapService } from '@/services/map.service'
 
 export interface FocusedPlace {
   mapId: string
@@ -23,7 +23,7 @@ export function MapProvider({ children }: { children: ReactNode }) {
   const [focusedPlace, setFocusedPlace] = useState<FocusedPlace | null>(null)
 
   useEffect(() => {
-    void hydratePlacesFromSupabase()
+    void mapService.fetchAllPlaces()
   }, [])
 
   const navigateToPlace = useCallback((place: FocusedPlace) => {

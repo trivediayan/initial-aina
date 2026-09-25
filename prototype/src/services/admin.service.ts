@@ -46,7 +46,7 @@ class AdminService {
     return {
       totalUsers: currentUser ? 1 : 0,
       totalPlaces: places.length,
-      heritagePlaces: places.filter(p => p.category === 'heritage').length,
+      heritagePlaces: places.filter(p => p.layer === 'heritage' || p.category.toLowerCase() === 'heritage').length,
       foodPlaces: food.length,
       hiddenGems: gems.length,
       totalVisits: visited.length,
@@ -69,7 +69,8 @@ class AdminService {
     }
 
     if (filter?.category && filter.category !== 'all') {
-      filtered = filtered.filter(p => p.category === filter.category)
+      const cat = filter.category.toLowerCase()
+      filtered = filtered.filter(p => (p.layer && p.layer.toLowerCase() === cat) || p.category.toLowerCase() === cat)
     }
 
     const total = filtered.length
@@ -77,25 +78,28 @@ class AdminService {
     const end = pagination ? start + pagination.pageSize : filtered.length
     const paginated = filtered.slice(start, end)
 
-    const adminPlaces: AdminPlace[] = paginated.map(p => ({
-      id: p.id,
-      name: p.name,
-      category: p.category,
-      description: p.description,
-      history: p.history,
-      culturalSignificance: p.culturalSignificance,
-      architecture: p.architecture,
-      latitude: p.coordinates[0],
-      longitude: p.coordinates[1],
-      images: p.image ? [p.image] : [],
-      openingHours: p.openingHours,
-      bestTime: p.bestTime,
-      estimatedExplorationTime: p.estimatedExplorationTime,
-      rating: p.rating,
-      status: 'active',
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date(),
-    }))
+    const adminPlaces: AdminPlace[] = paginated.map(p => {
+      const img = p.image_url || p.image
+      return {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        description: p.description,
+        history: p.historical_period || p.history,
+        culturalSignificance: p.why_interesting || p.culturalSignificance,
+        architecture: p.architectural_style || p.architecture,
+        latitude: p.latitude ?? p.coordinates[0],
+        longitude: p.longitude ?? p.coordinates[1],
+        images: img ? [img] : [],
+        openingHours: p.opening_hours || p.openingHours,
+        bestTime: p.best_time_to_visit || p.bestTime,
+        estimatedExplorationTime: p.estimatedExplorationTime,
+        rating: p.rating,
+        status: 'active',
+        createdAt: p.created_at ? new Date(p.created_at) : new Date('2024-01-15'),
+        updatedAt: p.updated_at ? new Date(p.updated_at) : new Date(),
+      }
+    })
 
     return { data: adminPlaces, total }
   }
@@ -253,11 +257,12 @@ class AdminService {
       priceRange: newFood.priceRange,
       openingHours: newFood.openingHours,
       whyAINARecommends: 'Added from admin dashboard',
-      image: newFood.images[0] || 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800',
+      image: newFood.images[0] || '',
       coordinates: newFood.coordinates ?? [22.3076, 73.1812],
     })
 
     return newFood
+
   }
 
   updateFood(id: string, updates: Partial<AdminFood>): AdminFood | null {
@@ -357,8 +362,9 @@ class AdminService {
       description: newGem.description,
       culturalInformation: newGem.culturalInformation,
       whyHidden: newGem.whyHidden,
-      image: newGem.images[0] || 'https://images.unsplash.com/photo-1580441712339-7210b84b017c?w=800',
+      image: newGem.images[0] || '',
       distance: 'Nearby',
+
       explorationTime: newGem.explorationTime || '1 hour',
       bestTime: newGem.bestTime || 'Any time',
       nearbyPlaces: [],
@@ -471,17 +477,18 @@ class AdminService {
   // Images Management
   getImages(filter?: FilterState, pagination?: PaginationState): { data: AdminImage[]; total: number } {
     const places = mapService.getPlaces()
-    const images: AdminImage[] = places.flatMap(p => 
-      p.image ? [{
+    const images: AdminImage[] = places.flatMap(p => {
+      const url = p.image_url || p.image
+      return url ? [{
         id: `${p.id}-1`,
-        url: p.image,
+        url,
         placeId: p.id,
         placeName: p.name,
         type: 'hero',
         status: 'active',
-        uploadedAt: new Date('2024-01-15'),
+        uploadedAt: p.created_at ? new Date(p.created_at) : new Date('2024-01-15'),
       }] : []
-    )
+    })
 
     let filtered = [...images]
     if (filter?.search) {

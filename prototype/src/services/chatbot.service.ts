@@ -2,7 +2,10 @@ import type { ChatMessage, QuickSuggestion, ChatbotContext } from '@/types/dashb
 import { userService } from './user.service'
 import { mapService } from './map.service'
 
-const chatbotApiUrl = import.meta.env.VITE_CHATBOT_API_URL
+const chatbotApiUrl =
+  import.meta.env.VITE_CHATBOT_API_URL ||
+  import.meta.env.VITE_BACKEND_API_URL ||
+  'https://aina-backend.trivediayn.workers.dev'
 
 interface ChatbotRequest {
   message: string
@@ -25,9 +28,10 @@ class ChatbotService {
     'food': "For authentic Gujarati cuisine, try Sev Usal at Mandvi - it's a Vadodara specialty! For breakfast, Fafda-Jalebi is traditional, especially on Saturdays. I can recommend specific restaurants based on your preferences.",
     'eat': "Gujarati thali is a complete meal experience! I recommend trying it at Sayajigunj for authentic flavors. For street food, Mandvi area has excellent options like Bhaji Pav and local snacks.",
     'restaurant': "Based on your location, I can suggest several great restaurants! For traditional Gujarati food, try places in Alkapuri or Mandvi. For modern cuisine, there are options in Gotri and Fatehgunj areas.",
-    'hidden': "I've discovered some amazing hidden gems! Nyay Mandir is a stunning Gothic-style building that many tourists miss. Khanderao Market has beautiful Indo-Saracenic architecture. These are lesser-known but absolutely worth visiting!",
-    'gem': "Hidden gems abound in Vadodara! Sankheda painted houses showcase traditional folk art that many tourists miss. Dabhoi Fort is about 30km away but offers remarkable military architecture from the 13th century.",
-    'secret': "Let me share some local secrets! Makarpura Palace is a smaller but elegant palace with Italian Renaissance influence - less crowded than Laxmi Vilas but equally beautiful. Chhani Lake offers tranquility away from the main tourist circuit.",
+    'hidden': "I've discovered some amazing hidden gems! Muzumdar Wada is a historic wooden mansion, Hazira Maqbara showcases exquisite Mughal architecture, and Sevasi Vav (Vidhyadhar ni Vav) is a breathtaking ancient stepwell.",
+    'gem': "Hidden gems abound in Vadodara! Explore Gendi Gate, Gulab Baug Bungalow, and the Akota Historical Site for rich local culture off the beaten path.",
+    'secret': "Let me share some local secrets! Hazira Maqbara offers tranquil gardens and detailed stone carvings. The Raopura heritage area has remarkable historic streetscapes.",
+
     'plan': "For trip planning, I recommend starting with major heritage sites in the morning, local food for lunch, and hidden gems in the afternoon. Vadodara is well-connected, so travel between places is convenient. Would you like me to suggest the best route?",
     'schedule': "I can help you build a practical visit plan! Most heritage sites are open from 9 AM to 5 PM, except on Mondays. Food places typically operate from 8 AM to 10 PM. Hidden gems can be visited any time during daylight hours.",
     'nearby': "Based on your current location, there are several interesting places within walking distance! I can show you heritage sites, spiritual places, and local food spots. The Sayaji Baug area has multiple attractions clustered together.",

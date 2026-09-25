@@ -5,12 +5,45 @@ export interface NavItem {
   path: string
 }
 
+export type PlaceLayer = 'heritage' | 'spiritual' | 'art' | 'hidden_gems'
+
 export interface Place {
   id: string
   name: string
-  category: PlaceCategory
-  coordinates: [number, number]
+  city?: string
+  district?: string | null
+  state?: string
+  country?: string
+  latitude?: number
+  longitude?: number
+  category: string
   description: string
+  tags?: string[]
+  layer?: PlaceLayer
+  historical_information?: string
+  best_time_to_visit?: string | null
+  estimated_visit_duration_minutes?: number
+  accessibility?: string
+  image_url?: string
+  source_urls?: string[]
+  historical_period?: string
+  architectural_style?: string
+  visit_time_minutes?: number
+  why_interesting?: string
+  best_for?: string[]
+  opening_hours?: string
+  entry_fee?: string
+  access_status?: string
+  itinerary_eligible?: boolean
+  eligibility_status?: string
+  hidden_gem?: boolean
+  source?: string
+  last_verified?: string
+  created_at?: string
+  updated_at?: string
+
+  // UI convenience aliases
+  coordinates: [number, number]
   rating: number
   image?: string
   history?: string
@@ -92,6 +125,27 @@ export interface ChatbotContext {
 
 export interface Food {
   id: string
+  item_number?: number
+  food_specialty?: string
+  specific_place?: string
+  city?: string
+  state?: string
+  country?: string
+  starting_price_text?: string
+  starting_price_amount?: number
+  opening_hours?: string
+  short_description?: string
+  why_it_represents?: string
+  local_story_legacy?: string
+  category?: string
+  tags?: string[]
+  image_url?: string
+  source_url?: string | null
+  layer?: 'food'
+  created_at?: string
+  updated_at?: string
+
+  // UI convenience aliases
   name: string
   image: string
   foodType: string
@@ -108,14 +162,20 @@ export interface HiddenGem {
   id: string
   name: string
   image: string
+  image_url?: string
   description: string
   culturalInformation: string
+  why_interesting?: string
   whyHidden: string
   distance: string
   explorationTime: string
+  visit_time_minutes?: number
   bestTime: string
+  best_time_to_visit?: string | null
   nearbyPlaces: string[]
   coordinates: [number, number]
+  layer?: 'hidden_gems'
+  category?: string
 }
 
 export interface SavedPlace {

@@ -38,22 +38,50 @@ export function PlacesPage({ category }: PlacesPageProps) {
   const goToMap = useInternalNavigate()
   const { user } = useAuth()
   const [places, setPlaces] = useState<Place[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [exploredTick, setExploredTick] = useState(0)
   const copy = categoryCopy[category]
 
   useEffect(() => {
-    const syncPlaces = () => setPlaces(mapService.getPlaces(category))
-    syncPlaces()
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    mapService
+      .fetchPlacesByLayer(category)
+      .then((data) => {
+        if (!cancelled) {
+          setPlaces(data)
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load places.')
+          setLoading(false)
+        }
+      })
+
+    const syncPlaces = () => {
+      if (!cancelled) {
+        setPlaces(mapService.getPlaces(category))
+      }
+    }
     window.addEventListener('ayna:places-updated', syncPlaces)
-    return () => window.removeEventListener('ayna:places-updated', syncPlaces)
+
+    return () => {
+      cancelled = true
+      window.removeEventListener('ayna:places-updated', syncPlaces)
+    }
   }, [category])
 
   const filteredPlaces = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
     if (!query) return places
     return places.filter((place) =>
-      `${place.name} ${place.description} ${place.address ?? ''} ${place.architecture ?? ''}`
+      `${place.name} ${place.description} ${place.address ?? ''} ${place.architecture ?? ''} ${place.category ?? ''}`
         .toLowerCase()
         .includes(query),
     )
@@ -65,14 +93,14 @@ export function PlacesPage({ category }: PlacesPageProps) {
       coordinates: place.coordinates,
       name: place.name,
       description: place.description,
-      category: place.category === 'all' ? 'heritage' : place.category,
-      image: place.image,
+      category: place.layer === 'spiritual' ? 'spiritual' : place.layer === 'art' ? 'art' : 'heritage',
+      image: place.image_url || place.image,
     })
   }
 
   const handleExplored = (place: Place) => {
     if (!user) return
-    explorationService.markExplored(user.id, place.id, place.name, place.category)
+    explorationService.markExplored(user.id, place.id, place.name, place.layer || category)
     setExploredTick((tick) => tick + 1)
   }
 
@@ -86,7 +114,7 @@ export function PlacesPage({ category }: PlacesPageProps) {
             <p>{copy.subtitle}</p>
           </div>
           <div className="collection-hero-stat">
-            <strong>{filteredPlaces.length.toString().padStart(2, '0')}</strong>
+            <strong>{loading ? '...' : filteredPlaces.length.toString().padStart(2, '0')}</strong>
             <span>places to explore</span>
           </div>
         </div>
@@ -103,18 +131,27 @@ export function PlacesPage({ category }: PlacesPageProps) {
             />
           </div>
           <div className="places-category-note">
-            <Sparkles size={15} /> Showing every {category} place from Supabase
+            <Sparkles size={15} /> Showing verified {category} places from backend
           </div>
         </div>
 
-        {filteredPlaces.length === 0 ? (
+        {loading ? (
           <div className="empty-state">
-            <p>{places.length === 0 ? 'No places have been added in this category yet.' : 'No matches. Try another search.'}</p>
+            <p>Loading {category} places...</p>
+          </div>
+        ) : error ? (
+          <div className="empty-state">
+            <p>Unable to load places: {error}</p>
+          </div>
+        ) : filteredPlaces.length === 0 ? (
+          <div className="empty-state">
+            <p>{places.length === 0 ? 'No places found in this category.' : 'No matches. Try another search.'}</p>
           </div>
         ) : (
           <div className="food-grid">
             {filteredPlaces.map((place) => {
               const explored = user ? explorationService.isExplored(user.id, place.id) : false
+              const displayImage = place.image_url || place.image
               return (
                 <article
                   key={`${place.id}-${exploredTick}`}
@@ -126,7 +163,7 @@ export function PlacesPage({ category }: PlacesPageProps) {
                     if (event.key === 'Enter' || event.key === ' ') navigate(toDetailPath('place', place.id))
                   }}
                 >
-                  <SmartImage src={place.image} alt={place.name} className="food-image" />
+                  <SmartImage src={displayImage} alt={place.name} className="food-image" />
                   <div className="food-content">
                     <div className="food-header-row">
                       <h3 className="food-name">{place.name}</h3>
@@ -135,12 +172,12 @@ export function PlacesPage({ category }: PlacesPageProps) {
                     <p className="food-specialty">{place.description}</p>
                     <div className="food-details">
                       {place.address && <div className="food-detail"><MapPin size={14} /> {place.address}</div>}
-                      {place.openingHours && <div className="food-detail"><Clock size={14} /> {place.openingHours}</div>}
+                      {place.opening_hours && <div className="food-detail"><Clock size={14} /> {place.opening_hours}</div>}
                     </div>
-                    {place.architecture && (
+                    {place.architectural_style && (
                       <div className="food-recommendation">
                         <Sparkles size={14} />
-                        <p>{place.architecture}</p>
+                        <p>{place.architectural_style}</p>
                       </div>
                     )}
                     <div className="food-actions">

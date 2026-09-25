@@ -1,7 +1,6 @@
 import type { PlaceCategory } from '@/types/dashboard.types'
 import { mapService } from '@/services/map.service'
 import { foodService } from '@/services/food.service'
-import { hiddenGemsService } from '@/services/hiddenGems.service'
 
 export type MapItemKind = 'place' | 'food' | 'gem'
 
@@ -26,19 +25,36 @@ export function toDetailPath(kind: MapItemKind, sourceId: string): string {
 }
 
 export function getAllMapItems(): MapItem[] {
-  const places: MapItem[] = mapService.getPlaces().map((place) => ({
-    mapId: toMapId('place', place.id),
-    sourceId: place.id,
-    kind: 'place',
-    name: place.name,
-    category: place.category === 'all' ? 'heritage' : place.category,
-    coordinates: place.coordinates,
-    description: place.description,
-    image: place.image,
-    rating: place.rating,
-  }))
+  const places = mapService.getPlaces()
+  const placeItems: MapItem[] = places.map((place) => {
+    let cat: Exclude<PlaceCategory, 'all'> = 'heritage'
+    let kind: MapItemKind = 'place'
 
-  const food: MapItem[] = foodService.getFood().map((item) => ({
+    if (place.layer === 'hidden_gems') {
+      cat = 'hidden'
+      kind = 'gem'
+    } else if (place.layer === 'spiritual') {
+      cat = 'spiritual'
+    } else if (place.layer === 'art') {
+      cat = 'art'
+    } else {
+      cat = 'heritage'
+    }
+
+    return {
+      mapId: toMapId(kind, place.id),
+      sourceId: place.id,
+      kind,
+      name: place.name,
+      category: cat,
+      coordinates: place.coordinates,
+      description: place.description,
+      image: place.image_url || place.image,
+      rating: place.rating,
+    }
+  })
+
+  const foodItems: MapItem[] = foodService.getFood().map((item) => ({
     mapId: toMapId('food', item.id),
     sourceId: item.id,
     kind: 'food',
@@ -46,21 +62,10 @@ export function getAllMapItems(): MapItem[] {
     category: 'food',
     coordinates: item.coordinates,
     description: item.specialty,
-    image: item.image,
+    image: item.image_url || item.image,
   }))
 
-  const gems: MapItem[] = hiddenGemsService.getHiddenGems().map((gem) => ({
-    mapId: toMapId('gem', gem.id),
-    sourceId: gem.id,
-    kind: 'gem',
-    name: gem.name,
-    category: 'hidden',
-    coordinates: gem.coordinates,
-    description: gem.description,
-    image: gem.image,
-  }))
-
-  return [...places, ...food, ...gems]
+  return [...placeItems, ...foodItems]
 }
 
 export function getMapItems(category: PlaceCategory = 'all'): MapItem[] {

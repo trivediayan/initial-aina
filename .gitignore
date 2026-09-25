@@ -25,4 +25,11 @@ out/
 .vscode/
 .idea/
 .devin/
+python_modules/
+scratch_npm_cache/
+.wrangler/
+pylock.toml
+uv.lock
+
+
 

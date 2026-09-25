@@ -97,8 +97,8 @@ export function SavedPlacesPage() {
                         coordinates: place.coordinates,
                         name: place.name,
                         description: place.description,
-                        category: place.category === 'all' ? 'heritage' : place.category,
-                        image: place.image,
+                        category: place.layer === 'spiritual' ? 'spiritual' : place.layer === 'art' ? 'art' : place.layer === 'hidden_gems' ? 'hidden' : 'heritage',
+                        image: place.image_url || place.image,
                       })}}
                     >
                       <Navigation size={15} /> Navigate

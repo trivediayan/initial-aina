@@ -180,13 +180,16 @@ def _data_error(exc: RuntimeError) -> HTTPException:
 
 
 @app.get("/places")
-async def places() -> dict[str, object]:
+async def places(layer: str | None = None) -> dict[str, object]:
     """Raw Vadodara place records (data access, no recommendations)."""
     try:
         rows = await data_repository.list_places()
     except (SupabaseConfigurationError, SupabaseDataError) as exc:
         raise _data_error(exc) from exc
+    if layer:
+        rows = [r for r in rows if r.get("layer") == layer]
     return {"places": rows, "count": len(rows)}
+
 
 
 @app.get("/places/{place_id}")

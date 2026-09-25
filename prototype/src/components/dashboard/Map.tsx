@@ -65,7 +65,11 @@ export function Map({
     const syncItems = () => setItems(getMapItems(selectedCategory))
     syncItems()
     window.addEventListener('ayna:places-updated', syncItems)
-    return () => window.removeEventListener('ayna:places-updated', syncItems)
+    window.addEventListener('ayna:food-updated', syncItems)
+    return () => {
+      window.removeEventListener('ayna:places-updated', syncItems)
+      window.removeEventListener('ayna:food-updated', syncItems)
+    }
   }, [selectedCategory])
 
   useEffect(() => {

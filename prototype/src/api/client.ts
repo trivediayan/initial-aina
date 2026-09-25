@@ -2,32 +2,26 @@ import { appConfig } from '@/constants/config'
 import type { ApiResult, ApiSource, HttpMethod } from '@/types/api.types'
 
 type RequestOptions = {
-  source: ApiSource
+  source?: ApiSource
   path: string
   method?: HttpMethod
   body?: unknown
   signal?: AbortSignal
 }
 
-function resolveBaseUrl(source: ApiSource): string {
-  return source === 's2' ? appConfig.s2.baseUrl : appConfig.s3.baseUrl
+function resolveBaseUrl(source: ApiSource = 'api'): string {
+  if (source === 's2') return appConfig.s2.baseUrl || appConfig.api.baseUrl
+  if (source === 's3') return appConfig.s3.baseUrl || appConfig.api.baseUrl
+  return appConfig.api.baseUrl || appConfig.s3.baseUrl || appConfig.s2.baseUrl
 }
 
 export async function apiRequest<T>({
-  source,
+  source = 'api',
   path,
   method = 'GET',
   body,
   signal,
 }: RequestOptions): Promise<ApiResult<T>> {
-  if (appConfig.useMock) {
-    return {
-      ok: false,
-      message: 'Mock mode is on. Services should use mocks instead of the HTTP client.',
-      status: 0,
-    }
-  }
-
   const baseUrl = resolveBaseUrl(source)
   if (!baseUrl) {
     return {
@@ -53,17 +47,17 @@ export async function apiRequest<T>({
     if (!response.ok) {
       return {
         ok: false,
-        message: 'Request failed.',
+        message: `Request failed with status ${response.status}.`,
         status: response.status,
       }
     }
 
     const data = (await response.json()) as T
     return { ok: true, data }
-  } catch {
+  } catch (error) {
     return {
       ok: false,
-      message: 'Network error.',
+      message: error instanceof Error ? error.message : 'Network error.',
       status: 0,
     }
   }

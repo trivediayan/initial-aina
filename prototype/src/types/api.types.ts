@@ -1,4 +1,4 @@
-export type ApiSource = 's2' | 's3'
+export type ApiSource = 'api' | 'backend' | 's2' | 's3'
 
 export type ApiResult<T> = {
   data: T
