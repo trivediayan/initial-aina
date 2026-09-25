@@ -162,8 +162,12 @@ export const mapService = {
       path: API_ENDPOINTS.places(),
     })
 
-    if (!apiRes.ok || !apiRes.data) {
+    if (!apiRes.ok) {
       throw new Error(apiRes.message || 'Failed to load places from the canonical backend.')
+    }
+
+    if (!apiRes.data) {
+      throw new Error('Canonical backend returned an empty places response.')
     }
 
     const rawList = Array.isArray(apiRes.data)
