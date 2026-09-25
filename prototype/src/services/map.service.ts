@@ -16,33 +16,26 @@ export function mapRowToPlace(row: Record<string, unknown>): Place {
   let lat = 22.3072
   let lng = 73.1812
 
-  if (typeof row.latitude === 'number') {
-    lat = row.latitude
-  } else if (typeof row.lat === 'number') {
-    lat = row.lat
-  } else if (Array.isArray(coordinates) && coordinates.length >= 2) {
-    lat = Number(coordinates[0]) || 22.3072
-  } else if (typeof coordinates === 'object' && coordinates !== null) {
+  if (typeof row.latitude === 'number') lat = row.latitude
+  else if (typeof row.lat === 'number') lat = row.lat
+  else if (Array.isArray(coordinates) && coordinates.length >= 2) lat = Number(coordinates[0]) || 22.3072
+  else if (typeof coordinates === 'object' && coordinates !== null) {
     const coordObj = coordinates as Record<string, unknown>
     lat = Number(coordObj.latitude ?? coordObj.lat ?? 22.3072)
   }
 
-  if (typeof row.longitude === 'number') {
-    lng = row.longitude
-  } else if (typeof row.lng === 'number') {
-    lng = row.lng
-  } else if (typeof row.lon === 'number') {
-    lng = row.lon
-  } else if (Array.isArray(coordinates) && coordinates.length >= 2) {
-    lng = Number(coordinates[1]) || 73.1812
-  } else if (typeof coordinates === 'object' && coordinates !== null) {
+  if (typeof row.longitude === 'number') lng = row.longitude
+  else if (typeof row.lng === 'number') lng = row.lng
+  else if (typeof row.lon === 'number') lng = row.lon
+  else if (Array.isArray(coordinates) && coordinates.length >= 2) lng = Number(coordinates[1]) || 73.1812
+  else if (typeof coordinates === 'object' && coordinates !== null) {
     const coordObj = coordinates as Record<string, unknown>
     lng = Number(coordObj.longitude ?? coordObj.lng ?? coordObj.lon ?? 73.1812)
   }
 
   const imageUrl =
-    (typeof row.image_url === 'string' && row.image_url.trim().length > 0 ? row.image_url.trim() : undefined) ||
-    (typeof row.image === 'string' && row.image.trim().length > 0 ? row.image.trim() : undefined) ||
+    (typeof row.image_url === 'string' && row.image_url.trim() ? row.image_url.trim() : undefined) ||
+    (typeof row.image === 'string' && row.image.trim() ? row.image.trim() : undefined) ||
     (Array.isArray(row.images) && typeof row.images[0] === 'string' ? row.images[0] : undefined)
 
   const tags = Array.isArray(row.tags) ? (row.tags as string[]) : []
@@ -53,13 +46,14 @@ export function mapRowToPlace(row: Record<string, unknown>): Place {
       : []
 
   const visitMinutes = typeof row.visit_time_minutes === 'number' ? row.visit_time_minutes : undefined
-  const explorationTime =
-    visitMinutes ? `${visitMinutes} mins` : (typeof row.estimated_exploration_time === 'string' ? row.estimated_exploration_time : undefined)
+  const explorationTime = visitMinutes
+    ? `${visitMinutes} mins`
+    : (typeof row.estimated_exploration_time === 'string' ? row.estimated_exploration_time : undefined)
 
   const name = String(row.name || '')
   const description = String(row.description || '')
   const category = String(row.category || 'Heritage')
-  const layer = (row.layer as PlaceLayer) || undefined
+  const layer = typeof row.layer === 'string' ? (row.layer as PlaceLayer) : undefined
 
   return {
     id: String(row.id),
@@ -76,8 +70,7 @@ export function mapRowToPlace(row: Record<string, unknown>): Place {
     layer,
     historical_information: typeof row.historical_information === 'string' ? row.historical_information : undefined,
     best_time_to_visit: typeof row.best_time_to_visit === 'string' ? row.best_time_to_visit : null,
-    estimated_visit_duration_minutes:
-      typeof row.estimated_visit_duration_minutes === 'number' ? row.estimated_visit_duration_minutes : undefined,
+    estimated_visit_duration_minutes: typeof row.estimated_visit_duration_minutes === 'number' ? row.estimated_visit_duration_minutes : undefined,
     accessibility: typeof row.accessibility === 'string' ? row.accessibility : undefined,
     image_url: imageUrl,
     source_urls: Array.isArray(row.source_urls) ? (row.source_urls as string[]) : [],
@@ -96,8 +89,6 @@ export function mapRowToPlace(row: Record<string, unknown>): Place {
     last_verified: typeof row.last_verified === 'string' ? row.last_verified : undefined,
     created_at: typeof row.created_at === 'string' ? row.created_at : undefined,
     updated_at: typeof row.updated_at === 'string' ? row.updated_at : undefined,
-
-    // UI convenience properties
     coordinates: [lat, lng],
     rating: typeof row.rating === 'number' ? row.rating : 4.8,
     image: imageUrl,
@@ -116,182 +107,93 @@ export function mapRowToPlace(row: Record<string, unknown>): Place {
   }
 }
 
-// Canonical in-memory place store (populated only by live backend/Supabase data)
 let placeStore: Place[] = []
 const layerCache: Partial<Record<PlaceLayer, Place[]>> = {}
 
 function mergeIntoPlaceStore(places: Place[]): void {
   const map = new Map<string, Place>()
-  for (const existing of placeStore) {
-    map.set(existing.id, existing)
-  }
-  for (const item of places) {
-    map.set(item.id, item)
-    if (item.layer) {
-      if (!layerCache[item.layer]) layerCache[item.layer] = []
-      const currentLayerList = layerCache[item.layer]!
-      const idx = currentLayerList.findIndex((p) => p.id === item.id)
-      if (idx >= 0) {
-        currentLayerList[idx] = item
-      } else {
-        currentLayerList.push(item)
-      }
-    }
-  }
+  for (const existing of placeStore) map.set(existing.id, existing)
+  for (const item of places) map.set(item.id, item)
   placeStore = Array.from(map.values())
+  for (const layer of Object.keys(layerCache) as PlaceLayer[]) {
+    layerCache[layer] = placeStore.filter((place) => place.layer === layer)
+  }
   notifyPlacesUpdated()
 }
 
 export const mapService = {
-  /**
-   * Fetch places strictly for an authoritative layer:
-   * heritage, spiritual, art, or hidden_gems.
-   * Calls GET /api/v1/places?layer={layer} (or queries Supabase with layer filter).
-   */
   async fetchPlacesByLayer(layer: PlaceLayer): Promise<Place[]> {
-    // 1. Try Backend API client first
     const apiRes = await apiRequest<{ places?: Record<string, unknown>[]; count?: number } | Record<string, unknown>[]>({
       path: API_ENDPOINTS.places(layer),
     })
 
-    if (apiRes.ok && apiRes.data) {
-      const rawList = Array.isArray(apiRes.data)
-        ? apiRes.data
-        : Array.isArray(apiRes.data.places)
-          ? apiRes.data.places
-          : []
-      if (rawList.length > 0) {
-        const places = rawList.map(mapRowToPlace)
-        layerCache[layer] = places
-        mergeIntoPlaceStore(places)
-        return places
-      }
+    if (!apiRes.ok || !apiRes.data) {
+      throw new Error(apiRes.message || `Failed to load ${layer} places from the canonical backend.`)
     }
 
-    // 2. Query Supabase directly
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('places')
-        .select('*')
-        .eq('layer', layer)
-        .order('name', { ascending: true })
+    const rawList = Array.isArray(apiRes.data)
+      ? apiRes.data
+      : Array.isArray(apiRes.data.places)
+        ? apiRes.data.places
+        : []
 
-      if (!error && data) {
-        const places = (data as Record<string, unknown>[]).map(mapRowToPlace)
-        layerCache[layer] = places
-        mergeIntoPlaceStore(places)
-        return places
-      } else if (error) {
-        console.error(`Failed to fetch ${layer} places from Supabase:`, error.message)
-      }
+    // Enforce the requested layer client-side as a second contract check.
+    // This prevents a backend/query regression from leaking other categories
+    // into a layer-specific page.
+    const places = rawList
+      .filter((row) => row.layer === layer)
+      .map(mapRowToPlace)
+
+    if (places.length === 0) {
+      throw new Error(`Canonical backend returned no records for layer "${layer}".`)
     }
 
-    // Return cached layer items if available
-    return layerCache[layer] || placeStore.filter((p) => p.layer === layer)
+    layerCache[layer] = places
+    mergeIntoPlaceStore(places)
+    return places
   },
 
-  /**
-   * Fetch all 25 canonical places.
-   */
   async fetchAllPlaces(): Promise<Place[]> {
-    // 1. Try Backend API
     const apiRes = await apiRequest<{ places?: Record<string, unknown>[]; count?: number } | Record<string, unknown>[]>({
       path: API_ENDPOINTS.places(),
     })
 
-    if (apiRes.ok && apiRes.data) {
-      const rawList = Array.isArray(apiRes.data)
-        ? apiRes.data
-        : Array.isArray(apiRes.data.places)
-          ? apiRes.data.places
-          : []
-      if (rawList.length > 0) {
-        const places = rawList.map(mapRowToPlace)
-        placeStore = places
-        for (const p of places) {
-          if (p.layer) {
-            if (!layerCache[p.layer]) layerCache[p.layer] = []
-            if (!layerCache[p.layer]!.some((x) => x.id === p.id)) {
-              layerCache[p.layer]!.push(p)
-            }
-          }
-        }
-        notifyPlacesUpdated()
-        return places
-      }
+    if (!apiRes.ok || !apiRes.data) {
+      throw new Error(apiRes.message || 'Failed to load places from the canonical backend.')
     }
 
-    // 2. Query Supabase directly
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('places')
-        .select('*')
-        .order('name', { ascending: true })
+    const rawList = Array.isArray(apiRes.data)
+      ? apiRes.data
+      : Array.isArray(apiRes.data.places)
+        ? apiRes.data.places
+        : []
 
-      if (!error && data) {
-        const places = (data as Record<string, unknown>[]).map(mapRowToPlace)
-        placeStore = places
-        for (const p of places) {
-          if (p.layer) {
-            if (!layerCache[p.layer]) layerCache[p.layer] = []
-            if (!layerCache[p.layer]!.some((x) => x.id === p.id)) {
-              layerCache[p.layer]!.push(p)
-            }
-          }
-        }
-        notifyPlacesUpdated()
-        return places
-      } else if (error) {
-        console.error('Failed to fetch places from Supabase:', error.message)
-      }
+    const places = rawList.map(mapRowToPlace)
+    placeStore = places
+    for (const layer of ['heritage', 'spiritual', 'art', 'hidden_gems'] as PlaceLayer[]) {
+      layerCache[layer] = places.filter((place) => place.layer === layer)
     }
-
-    return placeStore
+    notifyPlacesUpdated()
+    return places
   },
 
-  /**
-   * Fetch a single place record by ID.
-   */
   async fetchPlaceById(id: string): Promise<Place | null> {
     const existing = placeStore.find((p) => p.id === id)
     if (existing) return existing
 
-    // 1. Try backend API
     const apiRes = await apiRequest<Record<string, unknown>>({
       path: API_ENDPOINTS.placeDetail(id),
     })
 
-    if (apiRes.ok && apiRes.data && apiRes.data.id) {
-      const place = mapRowToPlace(apiRes.data)
-      mergeIntoPlaceStore([place])
-      return place
-    }
+    if (!apiRes.ok || !apiRes.data || !apiRes.data.id) return null
 
-    // 2. Try Supabase
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('places')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle()
-
-      if (!error && data) {
-        const place = mapRowToPlace(data as Record<string, unknown>)
-        mergeIntoPlaceStore([place])
-        return place
-      }
-    }
-
-    return null
+    const place = mapRowToPlace(apiRes.data)
+    mergeIntoPlaceStore([place])
+    return place
   },
 
-  /**
-   * Synchronously get places from the memory cache for a given category/layer.
-   */
   getPlaces: (categoryOrLayer?: PlaceCategory | PlaceLayer | string): Place[] => {
-    if (!categoryOrLayer || categoryOrLayer === 'all') {
-      return placeStore
-    }
+    if (!categoryOrLayer || categoryOrLayer === 'all') return placeStore
     if (categoryOrLayer === 'hidden' || categoryOrLayer === 'hidden_gems') {
       return placeStore.filter((place) => place.layer === 'hidden_gems')
     }
@@ -303,9 +205,7 @@ export const mapService = {
     )
   },
 
-  getPlaceById: (id: string): Place | undefined => {
-    return placeStore.find((place) => place.id === id)
-  },
+  getPlaceById: (id: string): Place | undefined => placeStore.find((place) => place.id === id),
 
   searchPlaces: (query: string): Place[] => {
     const lowerQuery = query.toLowerCase()
@@ -322,8 +222,7 @@ export const mapService = {
   getNearbyPlaces: (placeId: string, category?: PlaceCategory): Place[] => {
     const currentPlace = placeStore.find((p) => p.id === placeId)
     if (!currentPlace) return []
-
-    const nearby = placeStore
+    return placeStore
       .filter((p) => p.id !== placeId)
       .filter((p) => {
         if (category && category !== 'all') {
@@ -333,8 +232,6 @@ export const mapService = {
         return true
       })
       .slice(0, 3)
-
-    return nearby
   },
 
   createPlace: async (place: Place): Promise<Place> => {
